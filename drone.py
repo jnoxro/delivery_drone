@@ -70,6 +70,30 @@ def setup_gsm(): #check connection to and set up the gsm module
 	time1 = time.time() #timers for time out / retrying
 	time2 = time.time()
 	bufflen = 0
+
+	print ("[GSM] Disable echo")
+	msg = "AT+ATE=0\n" #command to turn off gsm echo
+	msg = list(bytearray(msg.encode())) #convert message to sendable data
+
+	gpio.output(ss1, gpio.LOW) #begin spi communication
+	set = [0x40] #0x40 = send data over uart 0
+	spi.xfer(set)
+	set = [len(msg)]
+	spi.xfer(set) #notify of message length
+	spi.xfer(msg) #send message
+	gpio.output(ss1, gpio.HIGH) #end communication
+
+	time.sleep(1)
+
+	bufflen = buff_check(0x00)
+	if bufflen[0] > 0:
+		dat = buff_read(0x00, bufflen[0])
+		dat = uart_decode(dat)
+		print ("[GSM] Response: " + dat)
+
+	time.sleep(0.5)
+
+
 	while stage < 10: #while stages left to go
 
 		if stage == 0: #Check module is connected (AT should reply with 'OK')
@@ -80,7 +104,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			gpio.output(ss1, gpio.LOW) #begin communication with spi2uart
 			set = [0x40] #0x40 = send data over uart0
 			spi.xfer(set)
-			set = [len(msg)] #this might be risky code: if len>9, no longer encoded properly
+			set = [len(msg)]
 			spi.xfer(set)
 			spi.xfer(msg) #send message
 			gpio.output(ss1, gpio.HIGH) #end communication
@@ -103,16 +127,24 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 		if stage == 2: #read response from module, ensure it is 'OK', otherwise retry
 			print("[GSM] Get Reponse...")
-			msg = buff_read(0x00, bufflen[0])
-			msg = uart_decode(msg)
+			msg = buff_read(0x00, bufflen[0]) #read uart0 received bytes
+			msg = uart_decode(msg) #decode into text
 
-			if(msg == "OK\n"):
+			if(msg == "OK\n"): #if expected response from GSM module
 				print("[GSM] Response OK")
 				stage = 10
 				time.sleep(1)
-			else:
-				print("[GSM] Respone FAIL: %s Retry AT" % msg)
+			else: #if response not as expected, then return to stage 0
+				print("[GSM] Respone FAIL: %s" % msg)
 				stage = 0
+
+		if stage == 3: #check cops / creg?
+			print("[GSM] Check cellular connection...")
+		if stage == 4: #send text to self
+			print("[GSM] Send SMS to self...")
+		if stage == 5: #wait for text from self
+			print("[GSM] Test Received...")
+			print("[GSM] Timeout"}
 
 
 def setup_lora():
@@ -133,7 +165,7 @@ def ctrl_drone():
 
 
 
-print("\n-----------\nDelivery Drone\n----------\nby Jack Orton\n\n")
+print("\n----------------\nDelivery Drone\n----------------\nby Jack Orton\n\n")
 
 setup_pins()
 
