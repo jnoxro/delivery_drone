@@ -5,7 +5,7 @@ import sys
 import serial
 import spidev
 import RPi.GPIO as gpio
-
+import random
 
 #SPI2UART
 #uart1 = GSM
@@ -86,7 +86,9 @@ def buff_send_sms(uart, msg):
 	spi.xfer(msg)
 	gpio.output(ss1, gpio.HIGH)
 
-def detect_sms():
+def detect_sms(channel):
+	print("[GSM] SMS interrupt")
+	#print(channel)
 	global smsrec
 	smsrec = 1
 
@@ -101,6 +103,8 @@ def setup_gsm(): #check connection to and set up the gsm module
 	time1 = time.time() #timers for time out / retrying
 	time2 = time.time()
 	bufflen = 0
+
+	testsms = str(random.randrange(10000))
 
 	print ("[GSM] Disable echo")
 	msg = "ATE0\n" #command to turn off gsm echo
@@ -119,7 +123,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 	time.sleep(0.5)
 
 
-	while stage < 20: #while stages left to go
+	while stage < 19: #while stages left to go
 
 		if stage == 0: #Check module is connected (AT should reply with 'OK')
 			print("[GSM] Send AT, await 'OK'...")
@@ -236,7 +240,8 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 		if stage == 9:
 			print("[GSM] Input number")
-			msg = "AT+CMGS=\"+447459636932\"\n"
+			msg = "AT+CMGS=\"+447459636932\"\n" #self
+			#msg = "AT+CMGS=\"+447914157048\"\n" #j-dog
 			msg = list(bytearray(msg.encode()))
 
 			buff_send(0x00, msg)
@@ -275,11 +280,11 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 		if stage == 12:
 			print ("[GSM] Send SMS...")
-			msg = "hello from bot dave"
+			msg = testsms
 			msg = list(bytearray(msg.encode()))
 
 			buff_send_sms(0x00, msg)
-			time.sleep(3)
+			time.sleep(2)
 			time1 = time.time()
 			stage = 13
 
@@ -295,7 +300,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 		if stage == 14:
 			msg = buff_read(0x00, bufflen[0])
 			msg2 = uart_decode(msg)
-			print ("[GSM] Received: %s" % msg2)
+			#print ("[GSM] Received: %s" % msg2)
 			stage = 15
 			time.sleep(1)
 			time1 = time.time()
@@ -303,56 +308,64 @@ def setup_gsm(): #check connection to and set up the gsm module
 		if stage == 15: #wait for text from self
 			global smsrec
 			if smsrec == 1:
-				print("[GSM] SMS Received")
+				print("[GSM] SMS received")
 				stage = 16
+				smsrec = 0
 				time.sleep(1)
 			else:
 				print ("[GSM] Wait SMS...")
 				time.sleep(2)
-				smsrec = 1
 
-			if time.time() - time1 > 30:
-				print ("[GSM] SMS Timout, retry")
-				stage = 6
+
+			if time.time() - time1 > 25:
+				print ("[GSM] SMS Timout, exit")
+				stage = 16
 				time.sleep(1)
 
 		if stage == 16:
-			print("[GSM] Check SMS")
-			print("[GSM] Test Received...")
-			print("[GSM] End.")
+
+			print ("SMSREC %d" % smsrec)
+
+			print("[GSM] Read SMS...")
+			msg = "AT+CMGL=\"REC UNREAD\"\n"
+			msg = list(bytearray(msg.encode()))
+
+			buff_send(0x00, msg)
+
 			stage = 17
 			time.sleep(1)
+			time1 = time.time()
 
-#		if stage == 17:
-#			print ("send AT#E2S thing")
-#			msg = "AT#E2SMSRI=?\n"
-#			msg = list(bytearray(msg.encode()))
-#
-#			buff_send(0x00, msg)
-#
-#			stage = 18
-#			time.sleep(1)
-#			time1 = time.time()
-#
-#		if stage == 18:
-#			bufflen = buff_check(0x00)
-#			if bufflen[0] > 0:
-#				stage = 19
-#				time.sleep(1)
-#			else:
-#				time.sleep(1)
-#
-#			if time.time() - time1 > 10:
-#				print ("timout")
-#				stage = 17
-#
-#		if stage == 19:
-#			msg = buff_read(0x00, bufflen[0])
-#			msg1 = uart_decode(msg)
-#
-#			print("msg: %s" % msg1)
-#			stage = 20
+		if stage == 17:
+			bufflen = buff_check(0x00)
+			if bufflen[0] > 0:
+				print ("[GSM] SMS data received")
+				stage = 18
+				time.sleep(1)
+			else:
+				time.sleep(1)
 
+			if time.time() - time1 > 10:
+				print ("[GSM] SMS read timout, retry read")
+				stage = 16
+
+		if stage == 18:
+			msg = buff_read(0x00, bufflen[0])
+			msg1 = uart_decode(msg)
+			msg2 = list(msg1)
+			tar = list(testsms)
+
+			if set(tar).issubset(set(msg2)):
+				print ("[GSM] SMS: OK")
+				stage = 19
+				time.sleep(1)
+			else:
+				print ("[GSM] Message mismatch: %s" % msg1)
+				stage = 6
+				time.sleep(1)
+
+		if stage == 19:
+			print ("[GSM] GSM setup complete!\n"
 
 
 def setup_lora():
