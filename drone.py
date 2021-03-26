@@ -18,7 +18,7 @@ spi = spidev.SpiDev()
 
 def setup_pins():
 
-	print("Setting GPIO and SPI...")
+	print("Initiate GPIO and SPI...")
 
 	gpio.setmode(gpio.BOARD) #use real pin numbers for gpio pins
 	gpio.setup(ss1, gpio.OUT) #set spi2uart chip select pin as output
@@ -35,7 +35,7 @@ def setup_pins():
 #	spi.xfer(msg) #set
 #	gpio.output(ss1, gpio.HIGH) #end communication
 
-	print("done")
+	print("done\n")
 
 def buff_check(uart): #check spi2uart module for received data in buffer on specific uart
 
@@ -60,8 +60,20 @@ def buff_read(uart, amt):
 
 	return read
 
+
+def buff_send(uart, msg):
+	gpio.output(ss1, gpio.LOW)
+	set = [0x40 | uart]
+	spi.xfer(set)
+	set = [len(msg)]
+	spi.xfer(set)
+	spi.xfer(msg)
+	gpio.output(ss1, gpio.HIGH)
+
+
 def uart_decode(msg):
 	return bytearray(msg).decode()
+
 
 def setup_gsm(): #check connection to and set up the gsm module
 
@@ -72,23 +84,17 @@ def setup_gsm(): #check connection to and set up the gsm module
 	bufflen = 0
 
 	print ("[GSM] Disable echo")
-	msg = "AT+ATE=0\n" #command to turn off gsm echo
+	msg = "ATE0\n" #command to turn off gsm echo
 	msg = list(bytearray(msg.encode())) #convert message to sendable data
 
-	gpio.output(ss1, gpio.LOW) #begin spi communication
-	set = [0x40] #0x40 = send data over uart 0
-	spi.xfer(set)
-	set = [len(msg)]
-	spi.xfer(set) #notify of message length
-	spi.xfer(msg) #send message
-	gpio.output(ss1, gpio.HIGH) #end communication
+	buff_send(0x00, msg)
 
-	time.sleep(1)
+	time.sleep(2)
 
 	bufflen = buff_check(0x00)
 	if bufflen[0] > 0:
 		dat = buff_read(0x00, bufflen[0])
-		dat = uart_decode(dat)
+		dat = uart_decode(dat).strip("\n\r\0")
 		print ("[GSM] Response: " + dat)
 
 	time.sleep(0.5)
@@ -101,13 +107,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			msg = "AT\n"
 			msg = list(bytearray(msg.encode())) #convert message into sendable data
 
-			gpio.output(ss1, gpio.LOW) #begin communication with spi2uart
-			set = [0x40] #0x40 = send data over uart0
-			spi.xfer(set)
-			set = [len(msg)]
-			spi.xfer(set)
-			spi.xfer(msg) #send message
-			gpio.output(ss1, gpio.HIGH) #end communication
+			buff_send(0x00, msg)
 
 			time1 = time.time() #record time AT sent for timeout
 			stage = 1 #move onto next stage
@@ -128,23 +128,33 @@ def setup_gsm(): #check connection to and set up the gsm module
 		if stage == 2: #read response from module, ensure it is 'OK', otherwise retry
 			print("[GSM] Get Reponse...")
 			msg = buff_read(0x00, bufflen[0]) #read uart0 received bytes
-			msg = uart_decode(msg) #decode into text
+			msg2 = uart_decode(msg) #decode into text
 
-			if(msg == "OK\n"): #if expected response from GSM module
+			if(msg2.strip("\n\r\0") == "OK"): #if expected response from GSM module
 				print("[GSM] Response OK")
 				stage = 10
 				time.sleep(1)
 			else: #if response not as expected, then return to stage 0
-				print("[GSM] Respone FAIL: %s" % msg)
+				print("[GSM] Respone FAIL: %s" % msg2.strip("\n\r\0"))
+				print(msg)
 				stage = 0
 
 		if stage == 3: #check cops / creg?
 			print("[GSM] Check cellular connection...")
+			msg = "AT+COPS?\n"
+			msg = list(bytearray(msg.encode()))
+
+			buff_send(0x00, msg)
+
 		if stage == 4: #send text to self
 			print("[GSM] Send SMS to self...")
+			msg = "AT+CMGF=1\n"
+			msg = "AT+CMGS=+447914157048"
+			msg = "hello"
+
 		if stage == 5: #wait for text from self
 			print("[GSM] Test Received...")
-			print("[GSM] Timeout"}
+			print("[GSM] Timeout")
 
 
 def setup_lora():
@@ -171,10 +181,8 @@ setup_pins()
 
 time.sleep(1)
 
-print("attempting read")
-
-result = buff_check(0x00)
-print(result)
+#result = buff_check(0x00)
+#print(result)
 #result = buff_check(0x01)
 #print(result)
 #result = buff_check(0x02)
