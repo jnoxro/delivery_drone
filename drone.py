@@ -12,15 +12,17 @@ import RPi.GPIO as gpio
 #uart2 = lora
 
 ss1 = 22 #chip enable pin for spi2uart
-
+gsmint = 26 #interupt pin from gsm to notify of sms
 spi = spidev.SpiDev()
 
+smsrec = 0
 
 def setup_pins():
 
 	print("Initiate GPIO and SPI...")
 
 	gpio.setmode(gpio.BOARD) #use real pin numbers for gpio pins
+	gpio.setup(gsmint, gpio.IN, pull_up_down=gpio.PUD_UP)
 	gpio.setup(ss1, gpio.OUT) #set spi2uart chip select pin as output
 	gpio.output(ss1, gpio.HIGH) #set spi2uart selector high to disable until needed
 
@@ -60,7 +62,6 @@ def buff_read(uart, amt):
 
 	return read
 
-
 def buff_send(uart, msg):
 	gpio.output(ss1, gpio.LOW)
 	set = [0x40 | uart]
@@ -84,9 +85,13 @@ def buff_send_sms(uart, msg):
 	spi.xfer(msg)
 	gpio.output(ss1, gpio.HIGH)
 
+def detect_sms():
+	smsrec = 1
+
+gpio.add_event_detect(gsmint, gpio.RISING, callback = detect_sms, bouncetime = 50)
+
 def uart_decode(msg):
 	return bytearray(msg).decode()
-
 
 def setup_gsm(): #check connection to and set up the gsm module
 
@@ -113,7 +118,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 	time.sleep(0.5)
 
 
-	while stage < 15: #while stages left to go
+	while stage < 16: #while stages left to go
 
 		if stage == 0: #Check module is connected (AT should reply with 'OK')
 			print("[GSM] Send AT, await 'OK'...")
@@ -230,7 +235,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 		if stage == 9:
 			print("[GSM] Input number")
-			msg = "AT+CMGS=\"+447914157048\"\n"
+			msg = "AT+CMGS=\"+447459636932\"\n"
 			msg = list(bytearray(msg.encode()))
 
 			buff_send(0x00, msg)
@@ -292,14 +297,26 @@ def setup_gsm(): #check connection to and set up the gsm module
 			print ("[GSM] Received: %s" % msg2)
 			stage = 15
 			time.sleep(1)
-
-
-
-
+			time1 = time.time()
 
 		if stage == 15: #wait for text from self
+			if smsrec == 1:
+				print("[GSM] SMS Received")
+				stage = 16
+				time.sleep(1)
+			else:
+				print ("[GSM] Wait SMS...")
+				time.sleep(2)
+
+			if time.time() - time1 > 30:
+				print ("[GSM] SMS Timout, retry"]
+				stage = 6
+				time.sleep(1)
+
+		if stage == 16:
+			print("[GSM] Check SMS")
 			print("[GSM] Test Received...")
-			print("[GSM] Timeout")
+			print("[GSM] End.")
 
 
 def setup_lora():
