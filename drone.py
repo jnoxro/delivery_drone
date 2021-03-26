@@ -131,11 +131,11 @@ def setup_gsm(): #check connection to and set up the gsm module
 			msg2 = uart_decode(msg) #decode into text
 
 			if(msg2.strip("\n\r\0") == "OK"): #if expected response from GSM module
-				print("[GSM] Response OK")
-				stage = 10
+				print("[GSM] Response: OK\n")
+				stage = 3
 				time.sleep(1)
 			else: #if response not as expected, then return to stage 0
-				print("[GSM] Respone FAIL: %s" % msg2.strip("\n\r\0"))
+				print("[GSM] Respone: FAIL: %s" % msg2.strip("\n\r\0"))
 				print(msg)
 				stage = 0
 
@@ -146,13 +146,86 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 			buff_send(0x00, msg)
 
-		if stage == 4: #send text to self
-			print("[GSM] Send SMS to self...")
+			stage = 4
+			time1 = time.time()
+
+		if stage == 4:
+			bufflen = buff_check(0x00)
+			if bufflen[0] > 0:
+				print ("[GSM] Response detected")
+				stage = 5
+				time.sleep(1)
+			else:
+				time.sleep(1)
+
+			if time.time() - time1 > 10:
+				print ("[GSM] Response timeout, retry connection check")
+				stage = 3
+
+		if stage == 5:
+			print ("[GSM] Get Response...")
+			msg = buff_read(0x00, bufflen[0])
+			msg2 = uart_decode(msg)
+			msg3 = list(msg2)
+
+			tar = ["O", "2"]
+			if set(tar).issubset(set(msg3)):
+				print ("[GSM] Response: OK\n")
+				stage = 6
+				time.sleep(1)
+			else:
+				print ("[GSM] Response: FAIL: %s" % msg2)
+				stage = 3
+				time.sleep(1)
+
+		if stage == 6: #send text to self
+			print("[GSM] Send test SMS to self...")
 			msg = "AT+CMGF=1\n"
+			msg = list(bytearray(msg.encode()))
+
+			buff_send(0x00, msg)
+
+			stage = 7
+			time1 = time.time()
+
+		if stage == 7:
+			bufflen = buff_check(0x00)
+			if bufflen[0] > 0:
+				print("[GSM] Response detected")
+				stage = 8
+				time.sleep(1)
+			else:
+				time.sleep(1)
+
+			if time.time()-time1 > 10:
+				print ("[GSM] Response timeout, retry enter SMS mode")
+				stage = 6
+
+		if stage == 8:
+			print ("[GSM] Get Response...")
+			msg = buff_read(0x00, bufflen[0])
+			msg2 = uart_decode(msg)
+
+			if msg2.strip("\n\r\0") == "OK":
+				print ("[GSM] SMS mode: OK")
+				stage = 10
+				time.sleep(1)
+			else:
+				print("[GSM] SMS mode: FAIL")
+				stage = 6
+				time.sleep(1)
+
+		if stage == 9:
+			msg = "
+
+
+
+
+
 			msg = "AT+CMGS=+447914157048"
 			msg = "hello"
 
-		if stage == 5: #wait for text from self
+		if stage == 9: #wait for text from self
 			print("[GSM] Test Received...")
 			print("[GSM] Timeout")
 
