@@ -71,13 +71,18 @@ def buff_send(uart, msg):
 	gpio.output(ss1, gpio.HIGH)
 
 def buff_send_sms(uart, msg):
-	end = ord(26)
-	msg = msg + end
+	end = [26]
+	nl = "\n"
+	nl = list(bytearray(nl.encode()))
+	msg = msg + end + nl
+#	print(msg)
 	gpio.output(ss1, gpio.LOW)
 	set = [0x40 | uart]
 	spi.xfer(set)
 	set = [len(msg)]
 	spi.xfer(set)
+	spi.xfer(msg)
+	gpio.output(ss1, gpio.HIGH)
 
 def uart_decode(msg):
 	return bytearray(msg).decode()
@@ -108,7 +113,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 	time.sleep(0.5)
 
 
-	while stage < 14: #while stages left to go
+	while stage < 15: #while stages left to go
 
 		if stage == 0: #Check module is connected (AT should reply with 'OK')
 			print("[GSM] Send AT, await 'OK'...")
@@ -225,7 +230,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 		if stage == 9:
 			print("[GSM] Input number")
-			msg = "AT+CMGS=+447914157048"
+			msg = "AT+CMGS=\"+447914157048\"\n"
 			msg = list(bytearray(msg.encode()))
 
 			buff_send(0x00, msg)
@@ -235,6 +240,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 		if stage == 10:
 			bufflen = buff_check(0x00)
+
 			if bufflen[0] > 0:
 				print ("[GSM] Response detected")
 				stage = 11
@@ -252,7 +258,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			msg = buff_read(0x00, bufflen[0])
 			msg2 = uart_decode(msg)
 
-			if msg2.strip("\n\r\0") == ">":
+			if msg2.strip(" \n\r\0") == ">":
 				print ("[GSM] SMS ready")
 				stage = 12
 				time.sleep(1)
@@ -267,7 +273,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			msg = list(bytearray(msg.encode()))
 
 			buff_send_sms(0x00, msg)
-
+			time.sleep(3)
 			time1 = time.time()
 			stage = 13
 
@@ -280,7 +286,12 @@ def setup_gsm(): #check connection to and set up the gsm module
 			else:
 				time.sleep(1)
 
-
+		if stage == 14:
+			msg = buff_read(0x00, bufflen[0])
+			msg2 = uart_decode(msg)
+			print ("[GSM] Received: %s" % msg2)
+			stage = 15
+			time.sleep(1)
 
 
 
