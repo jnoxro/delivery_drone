@@ -12,7 +12,7 @@ import RPi.GPIO as gpio
 #uart2 = lora
 
 ss1 = 22 #chip enable pin for spi2uart
-gsmint = 26 #interupt pin from gsm to notify of sms
+gsmint = 18 #interupt pin from gsm to notify of sms
 spi = spidev.SpiDev()
 
 smsrec = 0
@@ -23,6 +23,7 @@ def setup_pins():
 
 	gpio.setmode(gpio.BOARD) #use real pin numbers for gpio pins
 	gpio.setup(gsmint, gpio.IN, pull_up_down=gpio.PUD_UP)
+	gpio.add_event_detect(gsmint, gpio.FALLING, callback = detect_sms, bouncetime = 50)
 	gpio.setup(ss1, gpio.OUT) #set spi2uart chip select pin as output
 	gpio.output(ss1, gpio.HIGH) #set spi2uart selector high to disable until needed
 
@@ -86,9 +87,9 @@ def buff_send_sms(uart, msg):
 	gpio.output(ss1, gpio.HIGH)
 
 def detect_sms():
+	global smsrec
 	smsrec = 1
 
-gpio.add_event_detect(gsmint, gpio.RISING, callback = detect_sms, bouncetime = 50)
 
 def uart_decode(msg):
 	return bytearray(msg).decode()
@@ -118,7 +119,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 	time.sleep(0.5)
 
 
-	while stage < 16: #while stages left to go
+	while stage < 20: #while stages left to go
 
 		if stage == 0: #Check module is connected (AT should reply with 'OK')
 			print("[GSM] Send AT, await 'OK'...")
@@ -300,6 +301,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			time1 = time.time()
 
 		if stage == 15: #wait for text from self
+			global smsrec
 			if smsrec == 1:
 				print("[GSM] SMS Received")
 				stage = 16
@@ -307,9 +309,10 @@ def setup_gsm(): #check connection to and set up the gsm module
 			else:
 				print ("[GSM] Wait SMS...")
 				time.sleep(2)
+				smsrec = 1
 
 			if time.time() - time1 > 30:
-				print ("[GSM] SMS Timout, retry"]
+				print ("[GSM] SMS Timout, retry")
 				stage = 6
 				time.sleep(1)
 
@@ -317,6 +320,39 @@ def setup_gsm(): #check connection to and set up the gsm module
 			print("[GSM] Check SMS")
 			print("[GSM] Test Received...")
 			print("[GSM] End.")
+			stage = 17
+			time.sleep(1)
+
+#		if stage == 17:
+#			print ("send AT#E2S thing")
+#			msg = "AT#E2SMSRI=?\n"
+#			msg = list(bytearray(msg.encode()))
+#
+#			buff_send(0x00, msg)
+#
+#			stage = 18
+#			time.sleep(1)
+#			time1 = time.time()
+#
+#		if stage == 18:
+#			bufflen = buff_check(0x00)
+#			if bufflen[0] > 0:
+#				stage = 19
+#				time.sleep(1)
+#			else:
+#				time.sleep(1)
+#
+#			if time.time() - time1 > 10:
+#				print ("timout")
+#				stage = 17
+#
+#		if stage == 19:
+#			msg = buff_read(0x00, bufflen[0])
+#			msg1 = uart_decode(msg)
+#
+#			print("msg: %s" % msg1)
+#			stage = 20
+
 
 
 def setup_lora():
