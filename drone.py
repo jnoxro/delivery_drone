@@ -70,7 +70,7 @@ def buff_send(uart, msg):
 	spi.xfer(msg)
 	gpio.output(ss1, gpio.HIGH)
 
-def buff_send_sms(uart, msg)
+def buff_send_sms(uart, msg):
 	end = ord(26)
 	msg = msg + end
 	gpio.output(ss1, gpio.LOW)
@@ -108,7 +108,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 	time.sleep(0.5)
 
 
-	while stage < 10: #while stages left to go
+	while stage < 14: #while stages left to go
 
 		if stage == 0: #Check module is connected (AT should reply with 'OK')
 			print("[GSM] Send AT, await 'OK'...")
@@ -216,7 +216,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 			if msg2.strip("\n\r\0") == "OK":
 				print ("[GSM] SMS mode: OK")
-				stage = 10
+				stage = 9
 				time.sleep(1)
 			else:
 				print("[GSM] SMS mode: FAIL")
@@ -224,6 +224,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 				time.sleep(1)
 
 		if stage == 9:
+			print("[GSM] Input number")
 			msg = "AT+CMGS=+447914157048"
 			msg = list(bytearray(msg.encode()))
 
@@ -241,7 +242,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			else:
 				time.sleep(1)
 
-			if time.time() - time1 > 10
+			if time.time() - time1 > 10:
 				print ("[GSM] Response timeout, retry SMS")
 				stage = 6
 				time.sleep(1)
