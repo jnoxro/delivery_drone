@@ -240,7 +240,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 	buff_send(0x00, msg)
 
-	time.sleep(2)
+	time.sleep(1)
 
 	bufflen = buff_check(0x00)
 	if bufflen[0] > 0:
@@ -268,7 +268,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			if bufflen[0] > 0: #if buffer has bytes
 				print("[GSM] Response detected")
 				stage = 2 #move to read buffer
-				time.sleep(1)
+				#time.sleep(1)
 			else:
 				time.sleep(1) #else wait for response
 
@@ -284,7 +284,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			if(msg2.strip("\n\r\0") == "OK"): #if expected response from GSM module
 				print("[GSM] Response: OK\n")
 				stage = 3
-				time.sleep(1)
+				#time.sleep(1)
 			else: #if response not as expected, then return to stage 0
 				print("[GSM] Respone: FAIL: %s" % msg2.strip("\n\r\0"))
 				print(msg)
@@ -305,7 +305,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			if bufflen[0] > 0:
 				print ("[GSM] Response detected")
 				stage = 5
-				time.sleep(1)
+				#time.sleep(1)
 			else:
 				time.sleep(1)
 
@@ -323,11 +323,11 @@ def setup_gsm(): #check connection to and set up the gsm module
 			if set(tar).issubset(set(msg3)):
 				print ("[GSM] Response: OK\n")
 				stage = 6
-				time.sleep(1)
+				#time.sleep(1)
 			else:
 				print ("[GSM] Response: FAIL: %s" % msg2)
 				stage = 3
-				time.sleep(1)
+				#time.sleep(1)
 
 		if stage == 6: #send text to self
 			print("[GSM] Send test SMS to self...")
@@ -335,7 +335,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			send_sms("+447459636932", testsms)
 			
 			stage = 15
-			time.sleep(1)
+			#time.sleep(1)
 			
 
 		if stage == 15: #wait for text from self
@@ -344,16 +344,16 @@ def setup_gsm(): #check connection to and set up the gsm module
 				print("[GSM] SMS received")
 				stage = 16
 				smsrec = 0
-				time.sleep(1)
+				#time.sleep(1)
 			else:
 				print ("[GSM] Wait SMS...")
-				time.sleep(2)
+				time.sleep(1)
 
 
-			if time.time() - time1 > 25:
+			if time.time() - time1 > 15:
 				print ("[GSM] SMS Timout, exit")
 				stage = 6
-				time.sleep(1)
+				#time.sleep(1)
 
 		if stage == 16:
 
@@ -374,7 +374,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			if bufflen[0] > 0:
 				print ("[GSM] SMS data received")
 				stage = 18
-				time.sleep(1)
+				#time.sleep(1)
 			else:
 				time.sleep(1)
 
@@ -391,12 +391,12 @@ def setup_gsm(): #check connection to and set up the gsm module
 			if set(tar).issubset(set(msg2)):
 				print ("[GSM] SMS: OK")
 				stage = 19
-				time.sleep(1)
+				#time.sleep(1)
 			else:
 				print ("[GSM] Message mismatch: %s" % msg1)
 				print ("[GSM] Tar SMS: %s" % testsms)
 				stage = 6
-				time.sleep(1)
+				#time.sleep(1)
 
 		if stage == 19:
 			print ("[GSM] GSM setup complete!\n")
