@@ -16,6 +16,7 @@ gsmint = 18 #interupt pin from gsm to notify of sms
 m0 = 16 #M0 pin on lora module
 m1 = 15 #M1 pin on lora module
 
+bufflen = [0, 0]
 spi = spidev.SpiDev()
 
 smsrec = 0
@@ -35,18 +36,18 @@ def setup_pins():
 	gpio.setup(m0, gpio.OUT)
 	gpio.setup(m1, gpio.OUT)
 	gpio.output(m0, gpio.HIGH) #enter setup
-	gpio.output(m1, GPIO.HIGH) #enter setup
+	gpio.output(m1, gpio.HIGH) #enter setup
 
 	spi.open(0,0) #(bus, device) - spi2uart
 	spi.max_speed_hz = 50000 #spi speed, make sure its > all of our spi2uart uarts speeds together
 	spi.no_cs = True #we need custom chip select timings so we will use gpio pin control
 
-	gpio.output(ss1, gpio.LOW) #set low to begin spi communication
-	msg = [0x81] #0x80 = change baud rate, [0x80 | 0x00] = uart 1 baud rate, [0x80 | 0x01] = uart 2...
-	spi.xfer(msg) #tell spi2uart we want to set baud
-	msg = [0x07] #select baud rate (3 = 9600)
-	spi.xfer(msg) #set
-	gpio.output(ss1, gpio.HIGH) #end communication
+#	gpio.output(ss1, gpio.LOW) #set low to begin spi communication
+#	msg = [0x81] #0x80 = change baud rate, [0x80 | 0x00] = uart 1 baud rate, [0x80 | 0x01] = uart 2...
+#	spi.xfer(msg) #tell spi2uart we want to set baud
+#	msg = [0x07] #select baud rate (3 = 9600)
+#	spi.xfer(msg) #set
+#	gpio.output(ss1, gpio.HIGH) #end communication
 
 	print("done\n")
 
@@ -386,20 +387,34 @@ def setup_lora():
 	stage = 0
 	time1 = 0
 
-	gpio.output(ss1, gpio.HIGH)
+	gpio.output(m0, gpio.LOW)
+	gpio.output(m1, gpio.LOW)
+
+	gpio.output(ss1, gpio.LOW) #set uart 0x01 to 9600 for lora setup
+	msg = [0x81]
+	spi.xfer(msg)
+	msg = [0x03]
+	spi.xfer(msg)
 	gpio.output(ss1, gpio.HIGH)
 
+	time.sleep(1)
+
+	gpio.output(m0, gpio.HIGH) #lora set-up mode
+	gpio.output(m1, gpio.HIGH)
+
+	time.sleep(1)
+
+	time1 = time.time()
 	while stage < 10:
 		if stage == 0:
-			print ("[LORA] Send AT")
-
-			msg = "AT\n"
-			msg = list(bytearray(msg.encode()))
-
+			print ("[LORA] Send check")
+			#m = "\n"
+			#n = list(bytearray(m.encode()))
+			msg = [0xc3, 0xc3, 0xc3]
 			buff_send(0x01, msg)
 
 			stage = 1
-			time.sleep(1)
+			time.sleep(2)
 			time1 = time.time()
 
 		if stage == 1:
@@ -417,10 +432,23 @@ def setup_lora():
 				time.sleep(1)
 
 		if stage == 2:
+			print ("[LORA] Get response...")
 			msg = buff_read(0x01, bufflen[0])
-			msg1 = uart_decode(msg)
+#			msg1 = uart_decode(msg)
+#			hexmsg = [hex(x) for x in msg]
+			tar = [195, 69]
+			if set(tar).issubset(set(msg)):
+				print("[LORA] Response: OK")
+				stage = 3
+				time.sleep(1)
+			else:
+				print("[LORA] Response: FAIL, retry")
+				print (msg)
+				stage = 0
+				time.sleep(1)
 
-			print("[LORA] Response: %s" % msg1)
+		if stage == 3:
+			print ("[LORA] Send settings")
 			stage = 10
 
 def send_sms(mob, msg):
