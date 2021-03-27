@@ -102,13 +102,13 @@ def detect_sms(channel):
 	#print(channel)
 	global smsrec
 	smsrec = 1
-	
+
 def uart_decode(msg):
 	return bytearray(msg).decode()
 
-def send_sms(mob, msgtxt): 
+def send_sms(mob, msgtxt):
 	print ("[GSM|SMS] Send SMS")
-	
+
 	stage = 0
 	while stage < 9:
 		if stage == 0:
@@ -118,7 +118,7 @@ def send_sms(mob, msgtxt):
 			buff_send(0x00, msg)
 			stage = 1
 			time1 = time.time()
-			
+
 
 		if stage == 1:
 			bufflen = buff_check(0x00)
@@ -133,7 +133,7 @@ def send_sms(mob, msgtxt):
 				print ("[GSM] Response timeout, retry enter SMS mode")
 				stage = 0
 
-		if stage == 2
+		if stage == 2:
 			print ("[GSM] Get Response...")
 			msg = buff_read(0x00, bufflen[0])
 			msg2 = uart_decode(msg)
@@ -147,7 +147,7 @@ def send_sms(mob, msgtxt):
 				stage = 0
 				time.sleep(1)
 
-		if stage == 3
+		if stage == 3:
 			print("[GSM] Input number")
 			#sg = "AT+CMGS=\"+447459636932\"\n" #self
 			#msg = "AT+CMGS=\"3232\"\n" #text STOP to stop promotions
