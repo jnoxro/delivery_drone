@@ -98,7 +98,7 @@ def buff_send_sms(uart, msg):
 	gpio.output(ss1, gpio.HIGH)
 
 def detect_sms(channel):
-	print("[GSM] SMS interrupt")
+	print("[INTERRUPT] SMS interrupt")
 	#print(channel)
 	global smsrec
 	smsrec = 1
@@ -125,7 +125,7 @@ def send_sms(mob, msgtxt):
 			if bufflen[0] > 0:
 				print("[GSM|SMS] Response detected")
 				stage = 2
-				time.sleep(0.2)
+				#time.sleep(0.2)
 			else:
 				time.sleep(1)
 
@@ -141,11 +141,11 @@ def send_sms(mob, msgtxt):
 			if msg2.strip("\n\r\0") == "OK":
 				print ("[GSM] SMS mode: OK")
 				stage = 3
-				time.sleep(0.2)
+				#time.sleep(0.2)
 			else:
 				print("[GSM] SMS mode: FAIL")
 				stage = 0
-				time.sleep(0.2)
+				#time.sleep(0.2)
 
 		if stage == 3:
 			print("[GSM|SMS] Input number")
@@ -171,14 +171,14 @@ def send_sms(mob, msgtxt):
 			if bufflen[0] > 0:
 				print ("[GSM|SMS] Response detected")
 				stage = 5
-				time.sleep(0.2)
+				#time.sleep(0.2)
 			else:
 				time.sleep(1)
 
 			if time.time() - time1 > 10:
 				print ("[GSM] Response timeout, retry SMS")
 				stage = 0
-				time.sleep(0.2)
+				#time.sleep(0.2)
 
 		if stage == 5:
 			print ("[GSM|SMS] Get response...")
@@ -188,12 +188,12 @@ def send_sms(mob, msgtxt):
 			if msg2.strip(" \n\r\0") == ">":
 				print ("[GSM|SMS] SMS ready")
 				stage = 6
-				time.sleep(0.2)
+				#time.sleep(0.2)
 			else:
 				print ("[GSM|SMS] Response: FAIL, retry SMS")
 				#print(msg2)
 				stage = 0
-				time.sleep(0.2)
+				#time.sleep(0.2)
 
 		if stage == 6:
 			print ("[GSM|SMS] Send SMS...")
@@ -210,7 +210,7 @@ def send_sms(mob, msgtxt):
 			if bufflen[0] > 0:
 				print ("[GSM|SMS] Response detected")
 				stage = 8
-				time.sleep(0.2)
+				#time.sleep(0.2)
 			else:
 				time.sleep(1)
 
@@ -219,7 +219,7 @@ def send_sms(mob, msgtxt):
 			msg2 = uart_decode(msg)
 			#print ("[GSM|SMS] Received: %s" % msg2)
 			stage = 9
-			time.sleep(0.2)
+			#time.sleep(0.2)
 
 def read_sms():
 	print("Hi")
