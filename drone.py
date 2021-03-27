@@ -31,12 +31,12 @@ def setup_pins():
 	spi.max_speed_hz = 50000 #spi speed, make sure its > all of our spi2uart uarts speeds together
 	spi.no_cs = True #we need custom chip select timings so we will use gpio pin control
 
-#	gpio.output(ss1, gpio.LOW) #set low to begin spi communication
-#	msg = [0x81] #0x80 = change baud rate, [0x80 | 0x00] = uart 1 baud rate, [0x80 | 0x01] = uart 2...
-#	spi.xfer(msg) #tell spi2uart we want to change baud
-#	msg = [0x03] #select baud rate (3 = 9600)
-#	spi.xfer(msg) #set
-#	gpio.output(ss1, gpio.HIGH) #end communication
+	gpio.output(ss1, gpio.LOW) #set low to begin spi communication
+	msg = [0x81] #0x80 = change baud rate, [0x80 | 0x00] = uart 1 baud rate, [0x80 | 0x01] = uart 2...
+	spi.xfer(msg) #tell spi2uart we want to set baud
+	msg = [0x07] #select baud rate (3 = 9600)
+	spi.xfer(msg) #set
+	gpio.output(ss1, gpio.HIGH) #end communication
 
 	print("done\n")
 
@@ -241,6 +241,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 		if stage == 9:
 			print("[GSM] Input number")
 			msg = "AT+CMGS=\"+447459636932\"\n" #self
+			#msg = "AT+CMGS=\"3232\"\n" #text STOP to stop promotions
 			#msg = "AT+CMGS=\"+447914157048\"\n" #j-dog
 			msg = list(bytearray(msg.encode()))
 
@@ -361,15 +362,53 @@ def setup_gsm(): #check connection to and set up the gsm module
 				time.sleep(1)
 			else:
 				print ("[GSM] Message mismatch: %s" % msg1)
+				print ("[GSM] Tar SMS: %s" % testsms)
 				stage = 6
 				time.sleep(1)
 
 		if stage == 19:
-			print ("[GSM] GSM setup complete!\n"
+			print ("[GSM] GSM setup complete!\n")
 
 
 def setup_lora():
-	print("Hi")
+	print("Setting up LORA module...")
+
+	stage = 0
+	time1 = 0
+
+	while stage < 10:
+		if stage == 0:
+			print ("[LORA] Send AT")
+
+			msg = "AT\n"
+			msg = list(bytearray(msg.encode()))
+
+			buff_send(0x01, msg)
+
+			stage = 1
+			time.sleep(1)
+			time1 = time.time()
+
+		if stage == 1:
+			bufflen = buff_check(0x01)
+			if bufflen[0] > 0:
+				print ("[LORA] Response detected")
+				stage = 2
+				time.sleep(1)
+			else:
+				time.sleep(1)
+
+			if time.time() - time1 > 10:
+				print ("[LORA] Response timeout, retry")
+				stage = 0
+				time.sleep(1)
+
+		if stage == 2:
+			msg = buff_read(0x01, bufflen[0])
+			msg1 = uart_decode(msg)
+
+			print("[LORA] Response: %s" % msg1)
+			stage = 10
 
 def send_sms(mob, msg):
 	print("Hi")
@@ -401,7 +440,8 @@ time.sleep(1)
 #result = buff_check(0x03)
 #print(result)
 
-setup_gsm()
+#setup_gsm()
+setup_lora()
 
 spi.close()
 gpio.cleanup()
