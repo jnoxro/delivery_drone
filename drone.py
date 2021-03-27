@@ -22,6 +22,7 @@ bufflen = [0, 0]
 spi = spidev.SpiDev()
 
 smsrec = 0
+vehicle = 0
 
 def setup_pins():
 
@@ -525,9 +526,16 @@ def setup_lora():
 		spi.xfer(msg)
 		gpio.output(ss1, gpio.HIGH)
 		time.sleep(.2)
+		
+		print("[LORA] LORA Ssetup complete!\n")
 
 
-
+def setup_drone():
+	global vehicle
+	print("Setup drone")
+	print("[DRONE] Connect to drone")
+	vehicle = dronekit.connect('/dev/Serial0', wait_ready=True, baud=57600)
+	
 def ctrl_drone():
 	print("Hi")
 
@@ -542,15 +550,6 @@ print("\n----------------\nDelivery Drone\n----------------\nby Jack Orton\n\n")
 setup_pins()
 
 time.sleep(1)
-
-#result = buff_check(0x00)
-#print(result)
-#result = buff_check(0x01)
-#print(result)
-#result = buff_check(0x02)
-#print(result)
-#result = buff_check(0x03)
-#print(result)
 
 setup_gsm()
 setup_lora()
