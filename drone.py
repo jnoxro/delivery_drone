@@ -130,7 +130,7 @@ def send_sms(mob, msgtxt):
 				time.sleep(1)
 
 			if time.time()-time1 > 10:
-				print ("[GSM] Response timeout, retry enter SMS mode")
+				print ("[GSM|SMS] Response timeout, retry enter SMS mode")
 				stage = 0
 
 		if stage == 2:
@@ -139,11 +139,11 @@ def send_sms(mob, msgtxt):
 			msg2 = uart_decode(msg)
 
 			if msg2.strip("\n\r\0") == "OK":
-				print ("[GSM] SMS mode: OK")
+				print ("[GSM|SMS] SMS mode: OK")
 				stage = 3
 				#time.sleep(0.2)
 			else:
-				print("[GSM] SMS mode: FAIL")
+				print("[GSM|SMS] SMS mode: FAIL")
 				stage = 0
 				#time.sleep(0.2)
 
@@ -176,7 +176,7 @@ def send_sms(mob, msgtxt):
 				time.sleep(1)
 
 			if time.time() - time1 > 10:
-				print ("[GSM] Response timeout, retry SMS")
+				print ("[GSM|SMS] Response timeout, retry SMS")
 				stage = 0
 				#time.sleep(0.2)
 
