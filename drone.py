@@ -153,7 +153,7 @@ def send_sms(mob, msgtxt):
 			sg = list(bytearray(sg.encode()))
 			#msg = "AT+CMGS=\"3232\"\n" #text STOP to stop promotions
 			#msg = "AT+CMGS=\"+447914157048\"\n" #j-dog
-			msg = "AT=CMGS=\"" + mob + "\"\n"
+			msg = "AT+CMGS=\"" + mob + "\"\n"
 			msg = list(bytearray(msg.encode()))
 			print("OG:")
 			print(sg)
