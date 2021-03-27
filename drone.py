@@ -13,6 +13,9 @@ import random
 
 ss1 = 22 #chip enable pin for spi2uart
 gsmint = 18 #interupt pin from gsm to notify of sms
+m0 = 16 #M0 pin on lora module
+m1 = 15 #M1 pin on lora module
+
 spi = spidev.SpiDev()
 
 smsrec = 0
@@ -22,10 +25,17 @@ def setup_pins():
 	print("Initiate GPIO and SPI...")
 
 	gpio.setmode(gpio.BOARD) #use real pin numbers for gpio pins
+
 	gpio.setup(gsmint, gpio.IN, pull_up_down=gpio.PUD_UP)
 	gpio.add_event_detect(gsmint, gpio.FALLING, callback = detect_sms, bouncetime = 50)
+
 	gpio.setup(ss1, gpio.OUT) #set spi2uart chip select pin as output
 	gpio.output(ss1, gpio.HIGH) #set spi2uart selector high to disable until needed
+
+	gpio.setup(m0, gpio.OUT)
+	gpio.setup(m1, gpio.OUT)
+	gpio.output(m0, gpio.HIGH) #enter setup
+	gpio.output(m1, GPIO.HIGH) #enter setup
 
 	spi.open(0,0) #(bus, device) - spi2uart
 	spi.max_speed_hz = 50000 #spi speed, make sure its > all of our spi2uart uarts speeds together
@@ -375,6 +385,9 @@ def setup_lora():
 
 	stage = 0
 	time1 = 0
+
+	gpio.output(ss1, gpio.HIGH)
+	gpio.output(ss1, gpio.HIGH)
 
 	while stage < 10:
 		if stage == 0:
