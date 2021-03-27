@@ -390,6 +390,8 @@ def setup_lora():
 	gpio.output(m0, gpio.LOW)
 	gpio.output(m1, gpio.LOW)
 
+	print("[LORA|SPI2UART] Switch UART 0x01 to 9600")
+
 	gpio.output(ss1, gpio.LOW) #set uart 0x01 to 9600 for lora setup
 	msg = [0x81]
 	spi.xfer(msg)
@@ -399,13 +401,14 @@ def setup_lora():
 
 	time.sleep(1)
 
+	print("[LORA] Enter setup mode")
 	gpio.output(m0, gpio.HIGH) #lora set-up mode
 	gpio.output(m1, gpio.HIGH)
 
 	time.sleep(1)
 
 	time1 = time.time()
-	while stage < 10:
+	while stage < 6:
 		if stage == 0:
 			print ("[LORA] Send check")
 			#m = "\n"
@@ -414,7 +417,7 @@ def setup_lora():
 			buff_send(0x01, msg)
 
 			stage = 1
-			time.sleep(2)
+			time.sleep(1)
 			time1 = time.time()
 
 		if stage == 1:
@@ -449,7 +452,56 @@ def setup_lora():
 
 		if stage == 3:
 			print ("[LORA] Send settings")
-			stage = 10
+
+			msg = [0xc0, 0x00, 0x00, 0x25, 0x06, 0xc4]
+			buff_send(0x01, msg)
+
+			stage = 4
+			time1 = time.time()
+
+			time.sleep(1)
+
+		if stage == 4:
+			bufflen = buff_check(0x01)
+			if bufflen[0] > 0:
+				print("[LORA] Response detected")
+				stage = 5
+				time.sleep(1)
+			else:
+				time.sleep(1)
+
+			if time.time() - time1 > 10:
+				print("[LORA] Settings timeout, retry")
+				stage = 10
+				time.sleep(1)
+
+		if stage == 5:
+			print ("[LORA] Get response...")
+			msg = buff_read(0x01, bufflen[0])
+			tar = [0xc0, 0x00, 0x00, 0x25, 0x06, 0xc4]
+#			print(msg)
+#			hx = [hex(x) for x in msg]
+#			print(hx)
+			if msg == tar:
+				print("[LORA] Settings OK")
+				stage = 6
+			else:
+				print("LORA] Settings FAIL, retry")
+				stage = 3
+
+		time.sleep(1)
+		print("[LORA] Exit setup")
+		gpio.output(m0, gpio.LOW)
+		gpio.output(m1, gpio.LOW)
+
+		print("[LORA|SPI2UART] Switch UART 0x01 to 19200")
+		gpio.output(ss1, gpio.LOW)
+		msg = [0x81]
+		spi.xfer(msg)
+		msg = [0x04]
+		spi.xfer(msg)
+		gpio.output(ss1, gpio.HIGH)
+		time.sleep(1)
 
 def send_sms(mob, msg):
 	print("Hi")
@@ -481,7 +533,7 @@ time.sleep(1)
 #result = buff_check(0x03)
 #print(result)
 
-#setup_gsm()
+setup_gsm()
 setup_lora()
 
 spi.close()
