@@ -7,6 +7,8 @@ import spidev
 import RPi.GPIO as gpio
 import random
 
+import dronekit
+
 #SPI2UART
 #uart1 = GSM
 #uart2 = lora
