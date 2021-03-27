@@ -420,13 +420,13 @@ def setup_lora():
 	spi.xfer(msg)
 	gpio.output(ss1, gpio.HIGH)
 
-	time.sleep(1)
+	time.sleep(.2)
 
 	print("[LORA] Enter setup mode")
 	gpio.output(m0, gpio.HIGH) #lora set-up mode
 	gpio.output(m1, gpio.HIGH)
 
-	time.sleep(1)
+	time.sleep(.2)
 
 	time1 = time.time()
 	while stage < 6:
@@ -438,7 +438,7 @@ def setup_lora():
 			buff_send(0x01, msg)
 
 			stage = 1
-			time.sleep(1)
+			#time.sleep(1)
 			time1 = time.time()
 
 		if stage == 1:
@@ -446,14 +446,14 @@ def setup_lora():
 			if bufflen[0] > 0:
 				print ("[LORA] Response detected")
 				stage = 2
-				time.sleep(1)
+				#time.sleep(1)
 			else:
 				time.sleep(1)
 
 			if time.time() - time1 > 10:
 				print ("[LORA] Response timeout, retry")
 				stage = 0
-				time.sleep(1)
+				#time.sleep(1)
 
 		if stage == 2:
 			print ("[LORA] Get response...")
@@ -464,12 +464,12 @@ def setup_lora():
 			if set(tar).issubset(set(msg)):
 				print("[LORA] Response: OK")
 				stage = 3
-				time.sleep(1)
+				#time.sleep(1)
 			else:
 				print("[LORA] Response: FAIL, retry")
 				print (msg)
 				stage = 0
-				time.sleep(1)
+				#time.sleep(1)
 
 		if stage == 3:
 			print ("[LORA] Send settings")
@@ -487,14 +487,14 @@ def setup_lora():
 			if bufflen[0] > 0:
 				print("[LORA] Response detected")
 				stage = 5
-				time.sleep(1)
+				#time.sleep(1)
 			else:
 				time.sleep(1)
 
 			if time.time() - time1 > 10:
 				print("[LORA] Settings timeout, retry")
 				stage = 10
-				time.sleep(1)
+				#time.sleep(1)
 
 		if stage == 5:
 			print ("[LORA] Get response...")
@@ -510,7 +510,7 @@ def setup_lora():
 				print("LORA] Settings FAIL, retry")
 				stage = 3
 
-		time.sleep(1)
+		#time.sleep(.2)
 		print("[LORA] Exit setup")
 		gpio.output(m0, gpio.LOW)
 		gpio.output(m1, gpio.LOW)
@@ -522,7 +522,7 @@ def setup_lora():
 		msg = [0x04]
 		spi.xfer(msg)
 		gpio.output(ss1, gpio.HIGH)
-		time.sleep(1)
+		time.sleep(.2)
 
 
 
