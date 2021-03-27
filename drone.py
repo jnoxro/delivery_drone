@@ -155,10 +155,10 @@ def send_sms(mob, msgtxt):
 			#msg = "AT+CMGS=\"+447914157048\"\n" #j-dog
 			msg = "AT+CMGS=\"" + mob + "\"\n"
 			msg = list(bytearray(msg.encode()))
-			print("OG:")
-			print(sg)
-			print("New:")
-			print(msg)
+			#print("OG:")
+			#print(sg)
+			#print("New:")
+			#print(msg)
 
 			buff_send(0x00, msg)
 
@@ -191,7 +191,7 @@ def send_sms(mob, msgtxt):
 				time.sleep(1)
 			else:
 				print ("[GSM] Response: FAIL, retry SMS")
-				print(msg2)
+				#print(msg2)
 				stage = 0
 				time.sleep(1)
 
