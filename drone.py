@@ -438,7 +438,7 @@ def setup_lora():
 			buff_send(0x01, msg)
 
 			stage = 1
-			#time.sleep(1)
+			time.sleep(1)
 			time1 = time.time()
 
 		if stage == 1:
