@@ -102,10 +102,121 @@ def detect_sms(channel):
 	#print(channel)
 	global smsrec
 	smsrec = 1
-
-
+	
 def uart_decode(msg):
 	return bytearray(msg).decode()
+
+def send_sms(mob, msgtxt): 
+	print ("[GSM|SMS] Send SMS")
+	
+	stage = 0
+	while stage < 9:
+		if stage == 0:
+			msg = "AT+CMGF=1\n"
+			msg = list(bytearray(msg.encode()))
+
+			buff_send(0x00, msg)
+			stage = 1
+			time1 = time.time()
+			
+
+		if stage == 1:
+			bufflen = buff_check(0x00)
+			if bufflen[0] > 0:
+				print("[GSM] Response detected")
+				stage = 2
+				time.sleep(1)
+			else:
+				time.sleep(1)
+
+			if time.time()-time1 > 10:
+				print ("[GSM] Response timeout, retry enter SMS mode")
+				stage = 0
+
+		if stage == 2
+			print ("[GSM] Get Response...")
+			msg = buff_read(0x00, bufflen[0])
+			msg2 = uart_decode(msg)
+
+			if msg2.strip("\n\r\0") == "OK":
+				print ("[GSM] SMS mode: OK")
+				stage = 3
+				time.sleep(1)
+			else:
+				print("[GSM] SMS mode: FAIL")
+				stage = 0
+				time.sleep(1)
+
+		if stage == 3
+			print("[GSM] Input number")
+			#sg = "AT+CMGS=\"+447459636932\"\n" #self
+			#msg = "AT+CMGS=\"3232\"\n" #text STOP to stop promotions
+			#msg = "AT+CMGS=\"+447914157048\"\n" #j-dog
+			msg = "AT=CMGS=\"" + mob + "\"\n"
+			msg = list(bytearray(msg.encode()))
+
+			buff_send(0x00, msg)
+
+			time1 = time.time()
+			stage = 4
+
+		if stage == 4:
+			bufflen = buff_check(0x00)
+
+			if bufflen[0] > 0:
+				print ("[GSM] Response detected")
+				stage = 5
+				time.sleep(1)
+			else:
+				time.sleep(1)
+
+			if time.time() - time1 > 10:
+				print ("[GSM] Response timeout, retry SMS")
+				stage = 0
+				time.sleep(1)
+
+		if stage == 5:
+			print ("[GSM] Get response...")
+			msg = buff_read(0x00, bufflen[0])
+			msg2 = uart_decode(msg)
+
+			if msg2.strip(" \n\r\0") == ">":
+				print ("[GSM] SMS ready")
+				stage = 6
+				time.sleep(1)
+			else:
+				print ("[GSM] Response: FAIL, retry SMS")
+				stage = 0
+				time.sleep(1)
+
+		if stage == 6:
+			print ("[GSM] Send SMS...")
+			msg = msgtxt
+			msg = list(bytearray(msg.encode()))
+
+			buff_send_sms(0x00, msg)
+			time.sleep(2)
+			time1 = time.time()
+			stage = 7
+
+		if stage == 7:
+			bufflen = buff_check(0x00)
+			if bufflen[0] > 0:
+				print ("[GSM] Response detected")
+				stage = 8
+				time.sleep(1)
+			else:
+				time.sleep(1)
+
+		if stage == 8:
+			msg = buff_read(0x00, bufflen[0])
+			msg2 = uart_decode(msg)
+			#print ("[GSM] Received: %s" % msg2)
+			stage = 9
+			time.sleep(1)
+
+def read_sms():
+	print("Hi")
 
 def setup_gsm(): #check connection to and set up the gsm module
 
@@ -214,108 +325,12 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 		if stage == 6: #send text to self
 			print("[GSM] Send test SMS to self...")
-			msg = "AT+CMGF=1\n"
-			msg = list(bytearray(msg.encode()))
-
-			buff_send(0x00, msg)
-
-			stage = 7
-			time1 = time.time()
-
-		if stage == 7:
-			bufflen = buff_check(0x00)
-			if bufflen[0] > 0:
-				print("[GSM] Response detected")
-				stage = 8
-				time.sleep(1)
-			else:
-				time.sleep(1)
-
-			if time.time()-time1 > 10:
-				print ("[GSM] Response timeout, retry enter SMS mode")
-				stage = 6
-
-		if stage == 8:
-			print ("[GSM] Get Response...")
-			msg = buff_read(0x00, bufflen[0])
-			msg2 = uart_decode(msg)
-
-			if msg2.strip("\n\r\0") == "OK":
-				print ("[GSM] SMS mode: OK")
-				stage = 9
-				time.sleep(1)
-			else:
-				print("[GSM] SMS mode: FAIL")
-				stage = 6
-				time.sleep(1)
-
-		if stage == 9:
-			print("[GSM] Input number")
-			msg = "AT+CMGS=\"+447459636932\"\n" #self
-			#msg = "AT+CMGS=\"3232\"\n" #text STOP to stop promotions
-			#msg = "AT+CMGS=\"+447914157048\"\n" #j-dog
-			msg = list(bytearray(msg.encode()))
-
-			buff_send(0x00, msg)
-
-			time1 = time.time()
-			stage = 10
-
-		if stage == 10:
-			bufflen = buff_check(0x00)
-
-			if bufflen[0] > 0:
-				print ("[GSM] Response detected")
-				stage = 11
-				time.sleep(1)
-			else:
-				time.sleep(1)
-
-			if time.time() - time1 > 10:
-				print ("[GSM] Response timeout, retry SMS")
-				stage = 6
-				time.sleep(1)
-
-		if stage == 11:
-			print ("[GSM] Get response...")
-			msg = buff_read(0x00, bufflen[0])
-			msg2 = uart_decode(msg)
-
-			if msg2.strip(" \n\r\0") == ">":
-				print ("[GSM] SMS ready")
-				stage = 12
-				time.sleep(1)
-			else:
-				print ("[GSM] Response: FAIL, retry SMS")
-				stage = 6
-				time.sleep(1)
-
-		if stage == 12:
-			print ("[GSM] Send SMS...")
-			msg = testsms
-			msg = list(bytearray(msg.encode()))
-
-			buff_send_sms(0x00, msg)
-			time.sleep(2)
-			time1 = time.time()
-			stage = 13
-
-		if stage == 13:
-			bufflen = buff_check(0x00)
-			if bufflen[0] > 0:
-				print ("[GSM] Response detected")
-				stage = 14
-				time.sleep(1)
-			else:
-				time.sleep(1)
-
-		if stage == 14:
-			msg = buff_read(0x00, bufflen[0])
-			msg2 = uart_decode(msg)
-			#print ("[GSM] Received: %s" % msg2)
+			
+			send_sms("+447459636932", testsms)
+			
 			stage = 15
 			time.sleep(1)
-			time1 = time.time()
+			
 
 		if stage == 15: #wait for text from self
 			global smsrec
@@ -331,12 +346,12 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 			if time.time() - time1 > 25:
 				print ("[GSM] SMS Timout, exit")
-				stage = 16
+				stage = 6
 				time.sleep(1)
 
 		if stage == 16:
 
-			print ("SMSREC %d" % smsrec)
+			#rint ("SMSREC %d" % smsrec)
 
 			print("[GSM] Read SMS...")
 			msg = "AT+CMGL=\"REC UNREAD\"\n"
@@ -503,11 +518,7 @@ def setup_lora():
 		gpio.output(ss1, gpio.HIGH)
 		time.sleep(1)
 
-def send_sms(mob, msg):
-	print("Hi")
 
-def read_sms():
-	print("Hi")
 
 def ctrl_drone():
 	print("Hi")
