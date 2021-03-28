@@ -540,7 +540,7 @@ def setup_drone():
 	time1 = time.time()
 	while stage < 10:
 		if stage == 0:
-			if vehicle.is_armable
+			if vehicle.is_armable:
 				print("[DRONE] Ready to arm")
 				stage = 10
 			else:
