@@ -351,7 +351,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			send_sms("+447459636932", testsms)
 			
 			stage = 15
-			#time.sleep(1)
+			time.sleep(1)
 			
 
 		if stage == 15: #wait for text from self
