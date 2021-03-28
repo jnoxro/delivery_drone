@@ -52,6 +52,19 @@ def setup_pins():
 #	spi.xfer(msg) #set
 #	gpio.output(ss1, gpio.HIGH) #end communication
 
+	bufflen = buff_check(0x00)
+	if bufflen[0] > 0:
+		print("[SPI2UART] Unexpected buffer content in 0x00, empty...")
+		msg = buff_read(0x00, bufflen[0])
+		
+	bufflen = buff_check(0x01)
+	if bufflen[0] > 0:
+		print("[SPI2UART] Unexpected buffer content in 0x01, empty...")
+		msg = buff_read(0x01, bufflen[0])
+		
+
+
+
 	print("done\n")
 
 def buff_check(uart): #check spi2uart module for received data in buffer on specific uart
