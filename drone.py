@@ -382,7 +382,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			buff_send(0x00, msg)
 
 			stage = 17
-			time.sleep(1)
+			time.sleep(2)
 			time1 = time.time()
 
 		if stage == 17:
