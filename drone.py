@@ -592,9 +592,11 @@ setup_pins()
 
 time.sleep(1)
 
-setup_gsm()
-setup_lora()
-setup_drone()
+#setup_gsm()
+#setup_lora()
+#setup_drone()
+
+send_sms("+447914157048", "sah dude")
 
 spi.close()
 gpio.cleanup()
