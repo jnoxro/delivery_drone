@@ -534,7 +534,7 @@ def setup_drone():
 	global vehicle
 	print("Setup drone")
 	print("[DRONE] Connect to drone")
-	vehicle = dronekit.connect('/dev/Serial0', wait_ready=True, baud=57600)
+	vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
 	
 def ctrl_drone():
 	print("Hi")
