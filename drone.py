@@ -574,9 +574,9 @@ def setup_drone():
 			else:
 				time.sleep(1)
 				
-			if time.time() - time1 > 30:
+			if time.time() - time1 > 10:
 				print("[DRONE] Timout")
-				stage = 0
+				stage = 10
 def ctrl_drone():
 	print("Hi")
 
