@@ -592,8 +592,8 @@ setup_pins()
 
 time.sleep(1)
 
-#setup_gsm()
-#setup_lora()
+setup_gsm()
+setup_lora()
 setup_drone()
 
 spi.close()
