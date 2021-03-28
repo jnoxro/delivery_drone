@@ -535,45 +535,46 @@ def setup_drone():
 	print("Setup drone")
 	print("[DRONE] Connect to drone")
 	vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
-	print ("[DRONE] Connected(?)")
+	print ("[DRONE] Connected\n")
 	stage = 0
 	time1 = time.time()
 	while stage < 10:
 		if stage == 0:
+			print( "Autopilot Firmware version: %s" % vehicle.version)
+			#print( "Autopilot capabilities (supports ftp): %s" % vehicle.capabilities.ftp)
+			#print( "Global Location: %s" % vehicle.location.global_frame)
+			print( "Global Location (relative altitude): %s" % vehicle.location.global_relative_frame)
+			#print( "Local Location: %s" % vehicle.location.local_frame)    #NED
+			print( "Attitude: %s" % vehicle.attitude)
+			print( "Velocity: %s" % vehicle.velocity)
+			print( "GPS: %s" % vehicle.gps_0)
+			print( "Groundspeed: %s" % vehicle.groundspeed)
+			print( "Airspeed: %s" % vehicle.airspeed)
+			#print( "Gimbal status: %s" % vehicle.gimbal)
+			print( "Battery: %s" % vehicle.battery)
+			print( "EKF OK?: %s" % vehicle.ekf_ok)
+			print( "Last Heartbeat: %s" % vehicle.last_heartbeat)
+			#print( "Rangefinder: %s" % vehicle.rangefinder)
+			#print( "Rangefinder distance: %s" % vehicle.rangefinder.distance)
+			#print( "Rangefinder voltage: %s" % vehicle.rangefinder.voltage)
+			print( "Heading: %s" % vehicle.heading)
+			print( "Is Armable?: %s" % vehicle.is_armable)
+			print( "System status: %s" % vehicle.system_status.state)
+			print( "Mode: %s" % vehicle.mode.name)    # settable
+			print( "Armed: %s" % vehicle.armed)    # settable
+			
+			print("\n[DRONE] Wait until arming ready")
+		
+		if stage == 1:
 			if vehicle.is_armable:
 				print("[DRONE] Ready to arm")
 				stage = 10
 			else:
-				print("[DRONE] Not armable")
-				print("[DRONE] Data:")
-				print( "Autopilot Firmware version: %s" % vehicle.version)
-				print( "Autopilot capabilities (supports ftp): %s" % vehicle.capabilities.ftp)
-				print( "Global Location: %s" % vehicle.location.global_frame)
-				print( "Global Location (relative altitude): %s" % vehicle.location.global_relative_frame)
-				print( "Local Location: %s" % vehicle.location.local_frame)    #NED
-				print( "Attitude: %s" % vehicle.attitude)
-				print( "Velocity: %s" % vehicle.velocity)
-				print( "GPS: %s" % vehicle.gps_0)
-				print( "Groundspeed: %s" % vehicle.groundspeed)
-				print( "Airspeed: %s" % vehicle.airspeed)
-				print( "Gimbal status: %s" % vehicle.gimbal)
-				print( "Battery: %s" % vehicle.battery)
-				print( "EKF OK?: %s" % vehicle.ekf_ok)
-				print( "Last Heartbeat: %s" % vehicle.last_heartbeat)
-				print( "Rangefinder: %s" % vehicle.rangefinder)
-				print( "Rangefinder distance: %s" % vehicle.rangefinder.distance)
-				print( "Rangefinder voltage: %s" % vehicle.rangefinder.voltage)
-				print( "Heading: %s" % vehicle.heading)
-				print( "Is Armable?: %s" % vehicle.is_armable)
-				print( "System status: %s" % vehicle.system_status.state)
-				print( "Mode: %s" % vehicle.mode.name)    # settable
-				print( "Armed: %s" % vehicle.armed)    # settable
-				
-				time.sleep(5)
+				time.sleep(1)
 				
 			if time.time() - time1 > 30:
-				print("[DRONE] Armable timout.")
-				stage = 10
+				print("[DRONE] Timout")
+				stage = 0
 def ctrl_drone():
 	print("Hi")
 
