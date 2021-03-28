@@ -537,21 +537,21 @@ def setup_drone():
 	vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
 	print ("[DRONE] Connected\n")
 	stage = 0
-	time1 = time.time()
+	
 	while stage < 10:
 		if stage == 0:
 			print( "Autopilot Firmware version: %s" % vehicle.version)
 			#print( "Autopilot capabilities (supports ftp): %s" % vehicle.capabilities.ftp)
 			#print( "Global Location: %s" % vehicle.location.global_frame)
-			print( "Global Location (relative altitude): %s" % vehicle.location.global_relative_frame)
+			print( vehicle.location.global_relative_frame)
 			#print( "Local Location: %s" % vehicle.location.local_frame)    #NED
-			print( "Attitude: %s" % vehicle.attitude)
+			print( vehicle.attitude)
 			print( "Velocity: %s" % vehicle.velocity)
-			print( "GPS: %s" % vehicle.gps_0)
+			print( vehicle.gps_0)
 			print( "Groundspeed: %s" % vehicle.groundspeed)
-			print( "Airspeed: %s" % vehicle.airspeed)
+			#print( "Airspeed: %s" % vehicle.airspeed)
 			#print( "Gimbal status: %s" % vehicle.gimbal)
-			print( "Battery: %s" % vehicle.battery)
+			print( vehicle.battery)
 			print( "EKF OK?: %s" % vehicle.ekf_ok)
 			print( "Last Heartbeat: %s" % vehicle.last_heartbeat)
 			#print( "Rangefinder: %s" % vehicle.rangefinder)
@@ -565,6 +565,7 @@ def setup_drone():
 			
 			print("\n[DRONE] Wait until arming ready")
 			stage = 1
+			time1 = time.time()
 		
 		if stage == 1:
 			if vehicle.is_armable:
