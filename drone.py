@@ -569,7 +569,7 @@ def setup_drone():
 				print( "Mode: %s" % vehicle.mode.name)    # settable
 				print( "Armed: %s" % vehicle.armed)    # settable
 				
-				time.sleep(1)
+				time.sleep(5)
 				
 			if time.time() - time1 > 30:
 				print("[DRONE] Armable timout.")
