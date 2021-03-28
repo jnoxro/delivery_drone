@@ -564,6 +564,7 @@ def setup_drone():
 			print( "Armed: %s" % vehicle.armed)    # settable
 			
 			print("\n[DRONE] Wait until arming ready")
+			stage = 1
 		
 		if stage == 1:
 			if vehicle.is_armable:
