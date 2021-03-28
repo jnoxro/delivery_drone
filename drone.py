@@ -609,7 +609,7 @@ setup_gsm()
 #setup_lora()
 #setup_drone()
 
-send_sms("+447914157048", "sah dude")
+send_sms("+447443540798", "hi from droney boy, dont reply")
 
 spi.close()
 gpio.cleanup()
