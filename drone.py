@@ -731,7 +731,7 @@ def ctrl_drone(): #main function
 						print(noend)
 					
 					if ccount == 3:
-						nostart = (msglen-1)+i+1
+						nostart = (msglen-1)-i+1
 						print(nostart)
 						
 			stage = 0
