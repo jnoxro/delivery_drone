@@ -741,13 +741,22 @@ def ctrl_drone(): #main function
 			#custname = str(msg[msgstart:msgend])
 			#custmob = str(msg[nostart:noend])
 			
-			print(custname)
-			print(custmob)
-				
-			stage = 0
+			if len(custname) == 0 || len(custmob) == 0:
+				print("[SYSTEM] Failed to grab cust details")
+				stage = 0
+				time.sleep(1)
+			else:
+				stage = 2
+			
+			#print(custname)
+			#print(custmob)
+
+		if stage == 2:
+			msg = "Hi, " + custname ". We currently have: USB Cable. Would you like one? (Yes)"
+			send_sms(custmob, mgs)
+			
+			stage = 3
 			running = 0
-
-
 
 
 
