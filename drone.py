@@ -189,7 +189,7 @@ def send_sms(mob, msgtxt):
 				stage = 5
 				#time.sleep(0.2)
 			else:
-				time.sleep(1)
+				time.sleep(2)
 
 			if time.time() - time1 > 10:
 				print ("[GSM|SMS] Response timeout, retry SMS")
@@ -228,7 +228,7 @@ def send_sms(mob, msgtxt):
 				stage = 8
 				#time.sleep(0.2)
 			else:
-				time.sleep(1)
+				time.sleep(2)
 
 		if stage == 8:
 			msg = buff_read(0x00, bufflen[0])
