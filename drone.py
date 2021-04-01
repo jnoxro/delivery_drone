@@ -728,11 +728,11 @@ def ctrl_drone(): #main function
 					
 					if ccount == 2:
 						noend = (msglen-1)-i-2
-						#print(msgend)
+						print(msgend)
 					
 					if ccount == 3:
 						nostart = (msglen-1)+i+1
-						#print(msgend)
+						print(msgend)
 						
 			stage = 0
 					
@@ -756,7 +756,7 @@ time.sleep(1)
 #send_sms("+447914157048", "sahh dude - love from ur drone")
 
 
-setup_gsm()
+#setup_gsm()
 #setup_lora()
 
 #drone_ready = 0
