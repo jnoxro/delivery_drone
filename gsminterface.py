@@ -58,6 +58,7 @@ def uart_decode(msg):
 	
 while True:
 	msg = input(":")
+	msg = msg + "\n"
 	msg = list(bytearray(msg.encode()))
 
 	buff_send(0x00, msg)
