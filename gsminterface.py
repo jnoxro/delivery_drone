@@ -55,14 +55,14 @@ def buff_send(uart, msg):
 
 
 while True:
-  msg = input(":")
-  msg = list(bytearray(msg.encode()))
-   
-  buff_send(0x00, msg)
-  time.sleep(2)
-  
-  bufflen = buff_check(0x00)
-  if bufflen[0] > 0:
-    rec = buff_read(0x00, bufflen[0])
+	msg = input(":")
+	msg = list(bytearray(msg.encode()))
+
+	buff_send(0x00, msg)
+	time.sleep(2)
+
+	bufflen = buff_check(0x00)
+	if bufflen[0] > 0:
+	rec = buff_read(0x00, bufflen[0])
   
   
