@@ -233,7 +233,7 @@ def send_sms(mob, msgtxt):
 		if stage == 8:
 			msg = buff_read(0x00, bufflen[0])
 			msg2 = uart_decode(msg)
-			#print ("[GSM|SMS] Received: %s" % msg2)
+			print ("[GSM|SMS] Sent?: %s" % msg2)
 			stage = 9
 			#time.sleep(0.2)
 
