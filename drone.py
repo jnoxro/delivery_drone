@@ -271,7 +271,7 @@ def read_sms():
 			if msg2.strip("\n\r\0") == "OK":
 				print ("[GSM|SMS] SMS mode: OK")
 				stage = 3
-				#time.sleep(0.2)
+				time.sleep(1)
 			else:
 				print("[GSM|SMS] SMS mode: FAIL")
 				print(msg2)
@@ -289,7 +289,7 @@ def read_sms():
 				buff_send(0x00, msg)
 
 				stage = 4
-				time.sleep(3)
+				time.sleep(1)
 				time1 = time.time()
 
 		if stage == 4:
