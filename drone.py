@@ -256,7 +256,7 @@ def read_sms():
 
 		if stage == 2:
 			bufflen = buff_check(0x00)
-			if bufflen[0] > 0:
+			if bufflen[0] > 9:
 				print ("[GSM] SMS data received")
 				stage = 3
 				#time.sleep(1)
