@@ -630,7 +630,7 @@ def ctrl_drone(): #main function
 			noend = 0
 
 			for i in range(msglen):
-				if msg((msglen-1)-i) == '\n':
+				if msg[(msglen-1)-i] == '\n':
 					ncount = ncount + 1
 			
 				if ncount == 3:
