@@ -31,7 +31,7 @@ def setup_pins():
 	gpio.setmode(gpio.BOARD) #use real pin numbers for gpio pins
 
 	gpio.setup(gsmint, gpio.IN, pull_up_down=gpio.PUD_UP)
-	gpio.add_event_detect(gsmint, gpio.FALLING, callback = detect_sms, bouncetime = 50)
+	gpio.add_event_detect(gsmint, gpio.FALLING, callback = detect_sms, bouncetime = 90)
 
 	gpio.setup(ss1, gpio.OUT) #set spi2uart chip select pin as output
 	gpio.output(ss1, gpio.HIGH) #set spi2uart selector high to disable until needed
@@ -274,8 +274,9 @@ def read_sms():
 				#time.sleep(0.2)
 			else:
 				print("[GSM|SMS] SMS mode: FAIL")
+				print(msg2)
 				stage = 0
-				#time.sleep(0.2)
+				time.sleep(1)
 		
 		
 		if stage == 3:
