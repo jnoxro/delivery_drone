@@ -736,8 +736,10 @@ def ctrl_drone(): #main function
 						#print(nostart)
 						
 			
-			custname = str(msg[msgstart:msgend])
-			custmob = str(msg[nostart:noend])
+			custname = ''.join(str(e) for e in msg[msgstart:msgend])
+			custmob = ''.join(str(e) for e in msg[nostart:noend])
+			#custname = str(msg[msgstart:msgend])
+			#custmob = str(msg[nostart:noend])
 			
 			print(custname)
 			print(custmob)
