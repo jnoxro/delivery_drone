@@ -374,7 +374,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 	time.sleep(0.5)
 
-	stage = 20 #########################################################################
+	#stage = 20 #########################################################################
 	while stage < 19: #while stages left to go
 
 		if stage == 0: #Check module is connected (AT should reply with 'OK')
