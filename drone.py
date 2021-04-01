@@ -620,7 +620,8 @@ def ctrl_drone(): #main function
 		if stage == 1:
 			print("[SYSTEM] SMS Received")
 			
-			msg = read_sms()
+			msg = list(read_sms())
+
 			print(msg)
 			running = 0
 
@@ -636,11 +637,11 @@ setup_pins()
 time.sleep(1)
 
 setup_gsm()
-setup_lora()
+#setup_lora()
 
-drone_ready = 0
-while drone_ready == 0:
-	drone_ready = setup_drone()
+#drone_ready = 0
+#while drone_ready == 0:
+#	drone_ready = setup_drone()
 	
 ctrl_drone()
 
