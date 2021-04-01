@@ -315,7 +315,7 @@ def read_sms():
 		
 		if stage == 6:
 			print("[GSM|SMS] Wipe SMS")
-			msg = "AT+CMDA=\"DEL ALL\"\n"
+			msg = "AT+CMGD=4\n"
 			msg = list(bytearray(msg.encode()))
 			print(msg)
 			buff_send(0x00, msg)
@@ -337,10 +337,10 @@ def read_sms():
 				stage = 6
 
 		if stage == 8:
-			recmsg = buff_read(0x00, bufflen[0])
-			recmsg = uart_decode(recmsg)
+			msg = buff_read(0x00, bufflen[0])
+			msg = uart_decode(recmsg)
 			
-			print(recmsg)
+			#print(msg)
 			
 			stage = 9
 		
