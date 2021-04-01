@@ -53,7 +53,9 @@ def buff_send(uart, msg):
 	spi.xfer(msg)
 	gpio.output(ss1, gpio.HIGH)
 
-
+def uart_decode(msg):
+	return bytearray(msg).decode()
+	
 while True:
 	msg = input(":")
 	msg = list(bytearray(msg.encode()))
@@ -63,6 +65,7 @@ while True:
 
 	bufflen = buff_check(0x00)
 	if bufflen[0] > 0:
-	rec = buff_read(0x00, bufflen[0])
+		rec = buff_read(0x00, bufflen[0])
+		rec = uart_decode(rec)
   
   
