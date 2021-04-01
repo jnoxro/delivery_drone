@@ -385,6 +385,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 		if stage == 6: #send text to self
 			print("[GSM] Send test SMS to self...")
 			
+			send_sms("+447914157048", testsms)
 			send_sms("+447459636932", testsms)
 			
 			stage = 15
