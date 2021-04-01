@@ -634,7 +634,7 @@ def ctrl_drone(): #main function
 					ncount = ncount + 1
 			
 					if ncount == 3:
-						msgend = (msglen-1)-i-2
+						msgend = (msglen-1)-i-1
 						print(msgend)
 
 					if ncount == 4:
