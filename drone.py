@@ -242,7 +242,7 @@ def read_sms():
 	recmsg = ""
 	while stage < 9:
 		if stage == 0:
-			msg = "AT+CMGF=1\n"
+			msg = "AT\n"
 			msg = list(bytearray(msg.encode()))
 
 			buff_send(0x00, msg)
@@ -338,9 +338,9 @@ def read_sms():
 
 		if stage == 8:
 			msg = buff_read(0x00, bufflen[0])
-			msg = uart_decode(recmsg)
+			#msg = uart_decode(recmsg)
 			
-			#print(msg)
+			print(msg)
 			
 			stage = 9
 		
