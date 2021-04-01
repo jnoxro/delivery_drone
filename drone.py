@@ -313,6 +313,7 @@ def read_sms():
 			print(recmsg)
 			
 			stage = 6
+			time.sleep(1)
 		
 		if stage == 6:
 			print("[GSM|SMS] Wipe SMS")
@@ -341,7 +342,7 @@ def read_sms():
 			msg = buff_read(0x00, bufflen[0])
 			#msg = uart_decode(recmsg)
 			
-			print(msg)
+			#print(msg)
 			
 			stage = 9
 		
@@ -700,7 +701,7 @@ def ctrl_drone(): #main function
 			
 			msg = list(read_sms())
 			msglen = len(msg)
-			print(msg)
+			#print(msg)
 			ncount = 0
 			quotecount = 0
 			msgstart = 0
