@@ -610,7 +610,7 @@ def ctrl_drone(): #main function
 	
 	print("\n[SYSTEM] System Ready... Run main script")
 	print("[SYSTEM] Wait for SMS")
-	while running = 1:
+	while running == 1:
 		if stage == 0:
 			if smsrec == 1:
 				stage = 1
