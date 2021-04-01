@@ -685,7 +685,8 @@ def setup_drone():
 def ctrl_drone(): #main function
 	stage = 0
 	running = 1
-	
+	custname = ""
+	custmob = ""
 	print("\n[SYSTEM] System Ready... Run main script")
 	print("[SYSTEM] Wait for SMS")
 	while running == 1:
@@ -734,11 +735,14 @@ def ctrl_drone(): #main function
 						nostart = (msglen-1)-i+2
 						#print(nostart)
 						
+			
+			custname = uart_decode(msg[msgstart:msgend])
+			custmob = msg[nostart:noend]
+			
+			print(custname)
+			print(custmob)
+				
 			stage = 0
-					
-			print(msg[msgstart:msgend])
-			print(msg[nostart:noend])
-					
 			running = 0
 
 
