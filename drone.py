@@ -642,16 +642,17 @@ def ctrl_drone(): #main function
 						msgstart = (msglen-1)-i+1
 						#print(msgstart)
 						
-				else if msg[(msglen-1)-i] == '"':
-					quotecount = qoutecount + 1
+				else:
+					if msg[(msglen-1)-i] == '"':
+						quotecount = qoutecount + 1
 					
-					if quotecount == 5:
-						noend = (msglen-1)-i
-						#print(msgend)
+						if quotecount == 5:
+							noend = (msglen-1)-i
+							#print(msgend)
 					
-					if quotecount == 6:
-						nostart = (msglen-1)+i
-						#print(msgend)
+						if quotecount == 6:
+							nostart = (msglen-1)+i
+							#print(msgend)
 					
 			print(msg[msgstart:msgend])
 			print(msg[nostart:noend])
