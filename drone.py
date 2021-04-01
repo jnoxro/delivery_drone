@@ -383,6 +383,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 			send_sms("+447459636932", testsms)
 			
 			stage = 15
+			time1 = time.time()
 			time.sleep(2)
 			
 
@@ -399,7 +400,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 
 			if time.time() - time1 > 15:
-				print ("[GSM] SMS Timout, exit")
+				print ("[GSM] SMS Timout, retry\n")
 				stage = 6
 				#time.sleep(1)
 
