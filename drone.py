@@ -606,10 +606,10 @@ setup_pins()
 time.sleep(1)
 
 setup_gsm()
-#setup_lora()
-#setup_drone()
+setup_lora()
+setup_drone()
 
-send_sms("+447443540798", "hi from droney boy, dont reply")
+send_sms("+447914157048", "sahh dude - love from ur drone")
 
 spi.close()
 gpio.cleanup()
