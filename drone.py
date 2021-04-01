@@ -285,7 +285,7 @@ def read_sms():
 				msg = "AT+CMGL=\"REC UNREAD\"\n"
 				msg = list(bytearray(msg.encode()))
 				
-				print(msg)
+				#print(msg)
 				
 				buff_send(0x00, msg)
 
@@ -310,7 +310,7 @@ def read_sms():
 			recmsg = buff_read(0x00, bufflen[0])
 			recmsg = uart_decode(recmsg)
 			smsrec = 0
-			print(recmsg)
+			#print(recmsg)
 			
 			stage = 6
 			time.sleep(1)
@@ -319,7 +319,7 @@ def read_sms():
 			print("[GSM|SMS] Wipe SMS")
 			msg = "AT+CMGD=4\n"
 			msg = list(bytearray(msg.encode()))
-			print(msg)
+			#print(msg)
 			buff_send(0x00, msg)
 			
 			stage = 7
@@ -701,7 +701,7 @@ def ctrl_drone(): #main function
 			
 			msg = list(read_sms())
 			msglen = len(msg)
-			print(msg)
+			#print(msg)
 			ncount = 0
 			ccount = 0
 			msgstart = 0
@@ -728,11 +728,11 @@ def ctrl_drone(): #main function
 					
 					if ccount == 3:
 						noend = (msglen-1)-i-1
-						print(noend)
+						#print(noend)
 					
 					if ccount == 4:
-						nostart = (msglen-1)-i+3
-						print(nostart)
+						nostart = (msglen-1)-i+2
+						#print(nostart)
 						
 			stage = 0
 					
