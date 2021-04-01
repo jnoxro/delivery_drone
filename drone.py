@@ -256,7 +256,7 @@ def read_sms():
 
 		if stage == 2:
 			bufflen = buff_check(0x00)
-			if bufflen[0] > 9:
+			if bufflen[0] > 0:
 				print ("[GSM] SMS data received")
 				stage = 3
 				#time.sleep(1)
@@ -649,17 +649,17 @@ def ctrl_drone(): #main function
 						msgstart = (msglen-1)-i+1
 						#print(msgstart)
 						
-				else:
-					if msg[(msglen-1)-i] == '"':
-						quotecount = qoutecount + 1
+				
+				if msg[(msglen-1)-i] == '"':
+					quotecount = qoutecount + 1
 					
-						if quotecount == 5:
-							noend = (msglen-1)-i
-							#print(msgend)
+					if quotecount == 5:
+						noend = (msglen-1)-i
+						#print(msgend)
 					
-						if quotecount == 6:
-							nostart = (msglen-1)+i
-							#print(msgend)
+					if quotecount == 6:
+						nostart = (msglen-1)+i
+						#print(msgend)
 					
 			print(msg[msgstart:msgend])
 			print(msg[nostart:noend])
@@ -677,7 +677,11 @@ print("\n----------------\nDelivery Drone\n----------------\nby Jack Orton\n\n")
 setup_pins()
 time.sleep(1)
 
-setup_gsm()
+
+#send_sms("+447914157048", "sahh dude - love from ur drone")
+
+
+#setup_gsm()
 #setup_lora()
 
 #drone_ready = 0
