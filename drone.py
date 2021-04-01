@@ -240,8 +240,45 @@ def send_sms(mob, msgtxt):
 def read_sms():
 	stage = 0
 	recmsg = ""
-	while stage < 4:
+	while stage < 6:
 		if stage == 0:
+			msg = "AT+CMGF=1\n"
+			msg = list(bytearray(msg.encode()))
+
+			buff_send(0x00, msg)
+			stage = 1
+			time1 = time.time()
+
+
+		if stage == 1:
+			bufflen = buff_check(0x00)
+			if bufflen[0] > 0:
+				print("[GSM|SMS] Response detected")
+				stage = 2
+				#time.sleep(0.2)
+			else:
+				time.sleep(1)
+
+			if time.time()-time1 > 10:
+				print ("[GSM|SMS] Response timeout, retry enter SMS mode")
+				stage = 0
+
+		if stage == 2:
+			print ("[GSM|SMS] Get Response...")
+			msg = buff_read(0x00, bufflen[0])
+			msg2 = uart_decode(msg)
+
+			if msg2.strip("\n\r\0") == "OK":
+				print ("[GSM|SMS] SMS mode: OK")
+				stage = 3
+				#time.sleep(0.2)
+			else:
+				print("[GSM|SMS] SMS mode: FAIL")
+				stage = 0
+				#time.sleep(0.2)
+		
+		
+		if stage == 3:
 				print("[GSM] Read SMS...")
 				msg = "AT+CMGL=\"REC UNREAD\"\n"
 				msg = list(bytearray(msg.encode()))
@@ -250,15 +287,15 @@ def read_sms():
 				
 				buff_send(0x00, msg)
 
-				stage = 2
+				stage = 4
 				time.sleep(3)
 				time1 = time.time()
 
-		if stage == 2:
+		if stage == 4:
 			bufflen = buff_check(0x00)
 			if bufflen[0] > 0:
 				print ("[GSM] SMS data received")
-				stage = 3
+				stage = 5
 				#time.sleep(1)
 			else:
 				time.sleep(1)
@@ -267,13 +304,13 @@ def read_sms():
 				print ("[GSM] SMS read timout, retry read")
 				stage = 0
 
-		if stage == 3:
+		if stage == 5:
 			recmsg = buff_read(0x00, bufflen[0])
 			recmsg = uart_decode(recmsg)
 			
 			print(recmsg)
 			
-			stage = 4
+			stage = 6
 		
 	return recmsg
 
