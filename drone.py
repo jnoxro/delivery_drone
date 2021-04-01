@@ -690,6 +690,7 @@ def ctrl_drone(): #main function
 		if stage == 0:
 			if smsrec == 1:
 				stage = 1
+				time.sleep(1.5)
 			else:
 				time.sleep(1)
 		
