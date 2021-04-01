@@ -701,7 +701,7 @@ def ctrl_drone(): #main function
 			
 			msg = list(read_sms())
 			msglen = len(msg)
-			#print(msg)
+			print(msg)
 			ncount = 0
 			ccount = 0
 			msgstart = 0
@@ -728,11 +728,11 @@ def ctrl_drone(): #main function
 					
 					if ccount == 2:
 						noend = (msglen-1)-i-2
-						print(msgend)
+						print(noend)
 					
 					if ccount == 3:
 						nostart = (msglen-1)+i+1
-						print(msgend)
+						print(nostart)
 						
 			stage = 0
 					
