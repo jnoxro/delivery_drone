@@ -739,7 +739,7 @@ def ctrl_drone(): #main function
 			print(msg[msgstart:msgend])
 			print(msg[nostart:noend])
 					
-			running = 1
+			running = 0
 
 
 
