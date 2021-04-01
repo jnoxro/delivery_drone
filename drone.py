@@ -238,7 +238,39 @@ def send_sms(mob, msgtxt):
 			#time.sleep(0.2)
 
 def read_sms():
-	print("Hi")
+	stage = 0
+	recmsg = ""
+	while stage < 4:
+		if stage == 0:
+				print("[GSM] Read SMS...")
+				msg = "AT+CMGL=\"REC UNREAD\"\n"
+				msg = list(bytearray(msg.encode()))
+
+				buff_send(0x00, msg)
+
+				stage = 2
+				time.sleep(2)
+				time1 = time.time()
+
+		if stage == 2:
+			bufflen = buff_check(0x00)
+			if bufflen[0] > 0:
+				print ("[GSM] SMS data received")
+				stage = 3
+				#time.sleep(1)
+			else:
+				time.sleep(1)
+
+			if time.time() - time1 > 10:
+				print ("[GSM] SMS read timout, retry read")
+				stage = 0
+
+		if stage == 3:
+			recmsg = buff_read(0x00, bufflen[0])
+			recmsg = uart_decode(recmsg)
+			stage = 4
+		
+	return recmsg
 
 def setup_gsm(): #check connection to and set up the gsm module
 
@@ -375,32 +407,8 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 			#rint ("SMSREC %d" % smsrec)
 
-			print("[GSM] Read SMS...")
-			msg = "AT+CMGL=\"REC UNREAD\"\n"
-			msg = list(bytearray(msg.encode()))
-
-			buff_send(0x00, msg)
-
-			stage = 17
-			time.sleep(2)
-			time1 = time.time()
-
-		if stage == 17:
-			bufflen = buff_check(0x00)
-			if bufflen[0] > 0:
-				print ("[GSM] SMS data received")
-				stage = 18
-				#time.sleep(1)
-			else:
-				time.sleep(1)
-
-			if time.time() - time1 > 10:
-				print ("[GSM] SMS read timout, retry read")
-				stage = 16
-
-		if stage == 18:
-			msg = buff_read(0x00, bufflen[0])
-			msg1 = uart_decode(msg)
+			mgs1 = read_sms()
+			
 			msg2 = list(msg1)
 			tar = list(testsms)
 
@@ -550,7 +558,7 @@ def setup_drone():
 	vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
 	print ("[DRONE] Connected\n")
 	stage = 0
-	
+	connected = 0
 	while stage < 10:
 		if stage == 0:
 			print( "Autopilot Firmware version: %s" % vehicle.version)
@@ -582,16 +590,39 @@ def setup_drone():
 		
 		if stage == 1:
 			if vehicle.is_armable:
-				print("[DRONE] Ready to arm")
+				print("[DRONE] Ready to arm\n")
 				stage = 10
+				connected = 1
+			else:
+				print("[DRONE] Waiting for armable")
+				time.sleep(2)
+				
+			if time.time() - time1 > 20:
+				print("[DRONE] Timout\n")
+				connected = 1 ##0
+				stage = 10 ##0
+	
+	return connected
+
+def ctrl_drone(): #main function
+	stage = 0
+	running = 1
+	
+	print("\n[SYSTEM] System Ready... Run main script")
+	print("[SYSTEM] Wait for SMS")
+	while running = 1:
+		if stage == 0:
+			if smsrec == 1:
+				stage = 1
 			else:
 				time.sleep(1)
-				
-			if time.time() - time1 > 10:
-				print("[DRONE] Timout")
-				stage = 10
-def ctrl_drone():
-	print("Hi")
+		
+		if stage == 1:
+			print("[SYSTEM] SMS Received")
+			
+			msg = read_sms()
+			print(msg)
+			running = 0
 
 
 
@@ -602,14 +633,18 @@ def ctrl_drone():
 print("\n----------------\nDelivery Drone\n----------------\nby Jack Orton\n\n")
 
 setup_pins()
-
 time.sleep(1)
 
 setup_gsm()
 setup_lora()
-setup_drone()
 
-send_sms("+447914157048", "sahh dude - love from ur drone")
+drone_ready = 0
+while drone_ready == 0:
+	drone_ready = setup_drone()
+	
+ctrl_drone()
+
+#send_sms("+447914157048", "sahh dude - love from ur drone")
 
 spi.close()
 gpio.cleanup()
