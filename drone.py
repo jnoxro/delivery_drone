@@ -633,15 +633,15 @@ def ctrl_drone(): #main function
 				if msg[(msglen-1)-i] == '\n':
 					ncount = ncount + 1
 			
-				if ncount == 3:
-					msgend = (msglen-1)-i-2
-					print(msgend)
+					if ncount == 3:
+						msgend = (msglen-1)-i-2
+						print(msgend)
+
+					if ncount == 4:
+						msgstart = (msglen-1)-i+1
+						print(msgstart)
 					
-				if ncount == 4:
-					msgstart = (msglen-1)-i+1
-					print(msgstart)
-					
-			#print(msg[msgstart:msgend])
+			print(msg[msgstart:msgend])
 					
 			running = 0
 
