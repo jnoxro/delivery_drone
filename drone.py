@@ -393,7 +393,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 				print("[GSM] SMS received")
 				stage = 16
 				smsrec = 0
-				#time.sleep(1)
+				time.sleep(1)
 			else:
 				print ("[GSM] Wait SMS...")
 				time.sleep(1)
