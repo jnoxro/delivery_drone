@@ -57,16 +57,26 @@ def uart_decode(msg):
 	return bytearray(msg).decode()
 	
 while True:
-	msg = input(":")
-	msg = msg + "\n"
-	msg = list(bytearray(msg.encode()))
+	stage = 0
+	
+	if stage == 0:
+		msg = input(":")
+		msg = msg + "\n"
+		msg = list(bytearray(msg.encode()))
 
-	buff_send(0x00, msg)
-	time.sleep(2)
+		buff_send(0x00, msg)
+		time.sleep(2)
+		stage = 1
+	
+	if stage == 1:
 
-	bufflen = buff_check(0x00)
-	if bufflen[0] > 0:
-		rec = buff_read(0x00, bufflen[0])
-		rec = uart_decode(rec)
+		bufflen = buff_check(0x00)
+		if bufflen[0] > 0:
+			rec = buff_read(0x00, bufflen[0])
+			rec = uart_decode(rec)
+			print(rec)
+			stage = 0
+		else:
+			time.sleep(1)
   
   
