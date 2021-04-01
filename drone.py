@@ -407,7 +407,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 
 			#rint ("SMSREC %d" % smsrec)
 
-			mgs1 = read_sms()
+			msg1 = read_sms()
 			
 			msg2 = list(msg1)
 			tar = list(testsms)
