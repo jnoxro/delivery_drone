@@ -238,6 +238,7 @@ def send_sms(mob, msgtxt):
 			#time.sleep(0.2)
 
 def read_sms():
+	global smsrec
 	stage = 0
 	recmsg = ""
 	while stage < 9:
@@ -308,7 +309,7 @@ def read_sms():
 		if stage == 5:
 			recmsg = buff_read(0x00, bufflen[0])
 			recmsg = uart_decode(recmsg)
-			
+			smsrec = 0
 			print(recmsg)
 			
 			stage = 6
