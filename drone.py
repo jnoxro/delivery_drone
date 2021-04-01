@@ -741,7 +741,7 @@ def ctrl_drone(): #main function
 			#custname = str(msg[msgstart:msgend])
 			#custmob = str(msg[nostart:noend])
 			
-			if len(custname) == 0 OR len(custmob) == 0:
+			if len(custname) == 0 or len(custmob) == 0:
 				print("[SYSTEM] Failed to grab cust details")
 				stage = 0
 				time.sleep(1)
