@@ -719,6 +719,7 @@ def ctrl_drone(): #main function
 					if ncount == 4:
 						msgstart = (msglen-1)-i+1
 						#print(msgstart)
+			stage = 0
 						
 				
 			#	if msg[(msglen-1)-i] == '"':
