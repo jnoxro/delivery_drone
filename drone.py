@@ -240,7 +240,7 @@ def send_sms(mob, msgtxt):
 def read_sms():
 	stage = 0
 	recmsg = ""
-	while stage < 6:
+	while stage < 9:
 		if stage == 0:
 			msg = "AT+CMGF=1\n"
 			msg = list(bytearray(msg.encode()))
@@ -312,6 +312,37 @@ def read_sms():
 			print(recmsg)
 			
 			stage = 6
+		
+		if stage == 6:
+			print("[GSM|SMS] Wipe SMS")
+			msg = "AT+CMDA=\"DEL ALL\"\n"
+			msg = list(bytearray(msg.encode()))
+			print(msg)
+			buff_send(0x00, msg)
+			
+			stage = 7
+			time.sleep(1)
+		
+		if stage == 7:
+			bufflen = buff_check(0x00)
+			if bufflen[0] > 0:
+				print ("[GSM|SMS] Response received")
+				stage = 8
+				#time.sleep(1)
+			else:
+				time.sleep(1)
+
+			if time.time() - time1 > 10:
+				print ("[GSMSMS] SMS delete timout, retry read")
+				stage = 6
+
+		if stage == 8:
+			recmsg = buff_read(0x00, bufflen[0])
+			recmsg = uart_decode(recmsg)
+			
+			print(recmsg)
+			
+			stage = 9
 		
 	return recmsg
 
