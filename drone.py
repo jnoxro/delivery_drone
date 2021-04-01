@@ -719,7 +719,7 @@ time.sleep(1)
 #send_sms("+447914157048", "sahh dude - love from ur drone")
 
 
-#setup_gsm()
+setup_gsm()
 #setup_lora()
 
 #drone_ready = 0
