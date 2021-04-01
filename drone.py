@@ -736,8 +736,8 @@ def ctrl_drone(): #main function
 						#print(nostart)
 						
 			
-			custname = uart_decode(msg[msgstart:msgend])
-			custmob = msg[nostart:noend]
+			custname = str(msg[msgstart:msgend])
+			custmob = str(msg[nostart:noend])
 			
 			print(custname)
 			print(custmob)
