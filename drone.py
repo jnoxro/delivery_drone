@@ -621,8 +621,26 @@ def ctrl_drone(): #main function
 			print("[SYSTEM] SMS Received")
 			
 			msg = list(read_sms())
-
+			msglen = len(msg)
 			print(msg)
+			ncount = 0
+			msgstart = 0
+			msgend = 0
+			nostart = 0
+			noend = 0
+
+			for i in range(msglen):
+				if msg((msglen-1)-i) == '\n':
+					ncount = ncount + 1
+			
+				if ncount == 3:
+					msgend = (msglen-1)-i -2
+					
+				if ncount == 4:
+					msgstart = (msglen-1)-i +1
+					
+			print(msg[msgstart:msgend])
+					
 			running = 0
 
 
