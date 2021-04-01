@@ -727,10 +727,10 @@ def ctrl_drone(): #main function
 					ccount = ccount + 1
 					
 					if ccount == 2:
-						noend = (msglen-1)-i-1
+						noend = (msglen-1)-i-2
 						#print(msgend)
 					
-					if ccount == 6:
+					if ccount == 3:
 						nostart = (msglen-1)+i+1
 						#print(msgend)
 						
