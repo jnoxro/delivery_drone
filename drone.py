@@ -245,7 +245,9 @@ def read_sms():
 				print("[GSM] Read SMS...")
 				msg = "AT+CMGL=\"REC UNREAD\"\n"
 				msg = list(bytearray(msg.encode()))
-
+				
+				print(msg)
+				
 				buff_send(0x00, msg)
 
 				stage = 2
@@ -268,6 +270,9 @@ def read_sms():
 		if stage == 3:
 			recmsg = buff_read(0x00, bufflen[0])
 			recmsg = uart_decode(recmsg)
+			
+			print(recmsg)
+			
 			stage = 4
 		
 	return recmsg
