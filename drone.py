@@ -703,7 +703,7 @@ def ctrl_drone(): #main function
 			msglen = len(msg)
 			#print(msg)
 			ncount = 0
-			quotecount = 0
+			ccount = 0
 			msgstart = 0
 			msgend = 0
 			nostart = 0
@@ -720,22 +720,24 @@ def ctrl_drone(): #main function
 					if ncount == 4:
 						msgstart = (msglen-1)-i+1
 						#print(msgstart)
-			stage = 0
+			
 						
 				
-			#	if msg[(msglen-1)-i] == '"':
-				#	quotecount = qoutecount + 1
+				if msg[(msglen-1)-i] == ',':
+					ccount = ccount + 1
 					
-				#	if quotecount == 5:
-				#		noend = (msglen-1)-i
+					if ccount == 2:
+						noend = (msglen-1)-i-1
 						#print(msgend)
 					
-				#	if quotecount == 6:
-				#		nostart = (msglen-1)+i
+					if ccount == 6:
+						nostart = (msglen-1)+i+1
 						#print(msgend)
+						
+			stage = 0
 					
 			print(msg[msgstart:msgend])
-			#print(msg[nostart:noend])
+			print(msg[nostart:noend])
 					
 			running = 1
 
