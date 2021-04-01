@@ -622,8 +622,9 @@ def ctrl_drone(): #main function
 			
 			msg = list(read_sms())
 			msglen = len(msg)
-			print(msg)
+			#print(msg)
 			ncount = 0
+			quotecount = 0
 			msgstart = 0
 			msgend = 0
 			nostart = 0
@@ -635,13 +636,25 @@ def ctrl_drone(): #main function
 			
 					if ncount == 3:
 						msgend = (msglen-1)-i-1
-						print(msgend)
+						#print(msgend)
 
 					if ncount == 4:
 						msgstart = (msglen-1)-i+1
-						print(msgstart)
+						#print(msgstart)
+						
+				if msg[(msglen-1)-i] == '"':
+					quotecount = qoutecount + 1
+					
+					if quotecount == 5:
+						noend = (msglen-1)-i
+						#print(msgend)
+					
+					if quotecount == 6:
+						nostart = (msglen-1)+i
+						#print(msgend)
 					
 			print(msg[msgstart:msgend])
+			print(msg[nostart:noend])
 					
 			running = 0
 
