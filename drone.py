@@ -289,7 +289,7 @@ def read_sms():
 				buff_send(0x00, msg)
 
 				stage = 4
-				time.sleep(1)
+				time.sleep(2)
 				time1 = time.time()
 
 		if stage == 4:
