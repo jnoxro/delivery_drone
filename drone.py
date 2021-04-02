@@ -745,7 +745,7 @@ def ctrl_drone(): #main function
 						
 			
 			custname = ''.join(str(e) for e in msg[msgstart:msgend])
-			custmob = ''.join(str(e) for e in msg[nostart:noend])
+			custmob = ''.join(str(e) for e in ["\"", msg[nostart:noend], "\"")
 			#custname = str(msg[msgstart:msgend])
 			#custmob = str(msg[nostart:noend])
 			
@@ -761,7 +761,7 @@ def ctrl_drone(): #main function
 
 		if stage == 2:
 			#msg = "Hi, " + custname ". We currently have: USB Cable. Would you like one? (Yes)"
-			msg = "Hi, ".join(str(e) for e in [custname, ". We currently have: USB Cable. Would you like one? (Yes)"])
+			msg = "".join(str(e) for e in ["Hi ", custname, ". We currently have: USB Cable. Would you like one? (Yes)"])
 			#send_sms(custmob, msg)
 			print(msg)
 			
