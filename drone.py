@@ -642,7 +642,14 @@ def setup_lora():
 		
 		print("[LORA] LORA Ssetup complete!\n")
 
+voltage = 0
 
+async def batt_check(vehicle):
+	global voltage
+	async for data in vehicle.telemetry.battery():
+		print(f"Batt: {data.voltage_v}")
+		voltage = data.volate_v
+		
 async def setup_drone():
 	global vehicle
 	vehicle = System()
@@ -664,8 +671,11 @@ async def setup_drone():
 	while stage < 10:
 		if stage == 0:
 			print("[DRONE] pull batt")
-			async for data in vehicle.telemetry.battery():
-				print(f"Batt: {data.voltage_v}")
+			
+			asyncio.ensure_future(batt_check(vehicle))
+			print(voltage)
+			#async for data in vehicle.telemetry.battery():
+				#print(f"Batt: {data.voltage_v}")
 			#async for data in vehicle.telemetry.health():
 			#	print(f"Gyro: {data.is_gyrometer_calibration_ok}")
 			#	print(f"Accel: {data.is_accelerometer_calibration_ok}")
