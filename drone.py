@@ -2,12 +2,15 @@
 import time
 #from time import time
 import sys
+import asyncio
 import serial
 import spidev
 import RPi.GPIO as gpio
 import random
 
 import dronekit
+from mavsdk import System
+vehicle = System()
 
 #SPI2UART
 #uart1 = GSM
@@ -639,41 +642,34 @@ def setup_lora():
 		print("[LORA] LORA Ssetup complete!\n")
 
 
-def setup_drone():
+async def setup_drone():
 	global vehicle
 	print("Setup drone")
 	print("[DRONE] Connect to drone")
-	vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
-	print ("[DRONE] Connected\n")
+	
+	await vehicle.connect(system_address="serial:///dev/serial0:57600")
+
+	print("[DRONE] Connecting...")
+	async for state in vehicle.core.connection_state():
+		if state.is_connected:
+			print ("[DRONE] Connected\n")
+			break
+		
 	stage = 0
 	connected = 0
 	while stage < 10:
 		if stage == 0:
-			print( "Autopilot Firmware version: %s" % vehicle.version)
-			#print( "Autopilot capabilities (supports ftp): %s" % vehicle.capabilities.ftp)
-			#print( "Global Location: %s" % vehicle.location.global_frame)
-			print( vehicle.location.global_relative_frame)
-			#print( "Local Location: %s" % vehicle.location.local_frame)    #NED
-			print( vehicle.attitude)
-			print( "Velocity: %s" % vehicle.velocity)
-			print( vehicle.gps_0)
-			print( "Groundspeed: %s" % vehicle.groundspeed)
-			#print( "Airspeed: %s" % vehicle.airspeed)
-			#print( "Gimbal status: %s" % vehicle.gimbal)
-			print( vehicle.battery)
-			print( "EKF OK?: %s" % vehicle.ekf_ok)
-			print( "Last Heartbeat: %s" % vehicle.last_heartbeat)
-			#print( "Rangefinder: %s" % vehicle.rangefinder)
-			#print( "Rangefinder distance: %s" % vehicle.rangefinder.distance)
-			#print( "Rangefinder voltage: %s" % vehicle.rangefinder.voltage)
-			print( "Heading: %s" % vehicle.heading)
-			print( "Is Armable?: %s" % vehicle.is_armable)
-			print( "System status: %s" % vehicle.system_status.state)
-			print( "Mode: %s" % vehicle.mode.name)    # settable
-			print( "Armed: %s" % vehicle.armed)    # settable
+			async for data in vehicle.telemetry.battery():
+				print(f"Batt: {data.voltage_v}")
+			async for data in vehicle.telemetry.health():
+				print(f"Gyro: {data.is_gyrometer_calibration_ok}")
+				print(f"Accel: {data.is_accelerometer_calibration_ok}")
+				print(f"mag: {data.is_magnetomoter_calibration_ok}")
+			#async for data in vehicle.telemetry.battery():
+				#print(f"Batt: {data.voltage_v}")
 			
 			print("\n[DRONE] Wait until arming ready")
-			stage = 1
+			stage = 10
 			time1 = time.time()
 		
 		if stage == 1:
@@ -690,7 +686,7 @@ def setup_drone():
 				connected = 1 ##0
 				stage = 10 ##0
 	
-	return connected
+	#return connected
 
 def ctrl_drone(): #main function
 	stage = 0
@@ -784,14 +780,16 @@ time.sleep(1)
 #send_sms("+447914157048", "sahh dude - love from ur drone")
 
 
-setup_gsm()
-#setup_lora()
+#setup_gsm()
+setup_lora()
 
 #drone_ready = 0
 #while drone_ready == 0:
-#	drone_ready = setup_drone()
+if __name__ == "__main__":
+	loop = asyncio.get_event_loop()
+	loop.run_until_complete(setup_drone())
 	
-ctrl_drone()
+#ctrl_drone()
 
 #send_sms("+447914157048", "sahh dude - love from ur drone")
 
