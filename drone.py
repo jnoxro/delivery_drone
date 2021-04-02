@@ -173,12 +173,14 @@ def send_sms(mob, msgtxt):
 
 		if stage == 3:
 			print("[GSM|SMS] Input number")
-			sg = "AT+CMGS=\"+447459636932\"\n" #self
-			sg = list(bytearray(sg.encode()))
+			#sg = "AT+CMGS=\"+447459636932\"\n" #self
+			#sg = list(bytearray(sg.encode()))
 			#msg = "AT+CMGS=\"3232\"\n" #text STOP to stop promotions
 			#msg = "AT+CMGS=\"+447914157048\"\n" #j-dog
 			msg = "AT+CMGS=\"" + mob + "\"\n"
+			print("texting: " + msg)
 			msg = list(bytearray(msg.encode()))
+			
 			#print("OG:")
 			#print(sg)
 			#print("New:")
@@ -214,8 +216,8 @@ def send_sms(mob, msgtxt):
 				stage = 6
 				#time.sleep(0.2)
 			else:
-				print ("[GSM|SMS] Response: FAIL, retry SMS")
-				#print(msg2)
+				print ("[GSM|SMS] Response: number entry fail, retry SMS")
+				print(msg2)
 				stage = 0
 				#time.sleep(0.2)
 
