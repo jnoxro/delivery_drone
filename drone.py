@@ -128,17 +128,19 @@ def send_sms(mob, msgtxt):
 	stage = 0
 	while stage < 9:
 		if stage == 0:
+			print("[GSM|SMS] Attempt SMS mode...")
 			msg = "AT+CMGF=1\n"
 			msg = list(bytearray(msg.encode()))
 
 			buff_send(0x00, msg)
 			stage = 1
+			time.sleep(2)
 			time1 = time.time()
 
 
 		if stage == 1:
 			bufflen = buff_check(0x00)
-			if bufflen[0] > 12: #>9 should work
+			if bufflen[0] > 0: #>9 should work
 				print("[GSM|SMS] Response detected")
 				stage = 2
 				#time.sleep(0.2)
@@ -195,7 +197,7 @@ def send_sms(mob, msgtxt):
 				stage = 5
 				#time.sleep(0.2)
 			else:
-				time.sleep(2)
+				time.sleep(1)
 
 			if time.time() - time1 > 10:
 				print ("[GSM|SMS] Response timeout, retry SMS")
@@ -218,7 +220,7 @@ def send_sms(mob, msgtxt):
 				#time.sleep(0.2)
 
 		if stage == 6:
-			print ("[GSM|SMS] Send SMS...")
+			print ("[GSM|SMS] Send SMS text data...")
 			msg = msgtxt
 			msg = list(bytearray(msg.encode()))
 
@@ -234,7 +236,7 @@ def send_sms(mob, msgtxt):
 				stage = 8
 				#time.sleep(0.2)
 			else:
-				time.sleep(2)
+				time.sleep(1)
 
 		if stage == 8:
 			msg = buff_read(0x00, bufflen[0])
