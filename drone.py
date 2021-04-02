@@ -756,13 +756,14 @@ def ctrl_drone(): #main function
 			else:
 				stage = 2
 			
-			#print(custname)
-			#print(custmob)
+			print(custname)
+			print(custmob)
 
 		if stage == 2:
 			#msg = "Hi, " + custname ". We currently have: USB Cable. Would you like one? (Yes)"
 			msg = "Hi, ".join(str(e) for e in [custname, ". We currently have: USB Cable. Would you like one? (Yes)"])
-			send_sms(custmob, msg)
+			#send_sms(custmob, msg)
+			print(msg)
 			
 			stage = 3
 			running = 0
