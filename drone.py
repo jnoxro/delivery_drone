@@ -656,17 +656,20 @@ async def setup_drone():
 		if state.is_connected:
 			print ("[DRONE] Connected\n")
 			break
+			
+	print("[DRONE] pull data")
 		
 	stage = 0
 	connected = 0
 	while stage < 10:
 		if stage == 0:
+			print("[DRONE] pull batt")
 			async for data in vehicle.telemetry.battery():
 				print(f"Batt: {data.voltage_v}")
-			async for data in vehicle.telemetry.health():
-				print(f"Gyro: {data.is_gyrometer_calibration_ok}")
-				print(f"Accel: {data.is_accelerometer_calibration_ok}")
-				print(f"mag: {data.is_magnetomoter_calibration_ok}")
+			#async for data in vehicle.telemetry.health():
+			#	print(f"Gyro: {data.is_gyrometer_calibration_ok}")
+			#	print(f"Accel: {data.is_accelerometer_calibration_ok}")
+			#	print(f"mag: {data.is_magnetomoter_calibration_ok}")
 			#async for data in vehicle.telemetry.battery():
 				#print(f"Batt: {data.voltage_v}")
 			
