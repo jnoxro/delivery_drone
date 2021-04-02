@@ -803,8 +803,8 @@ setup_lora()
 #drone_ready = 0
 #while drone_ready == 0:
 if __name__ == "__main__":
-	loop = asyncio.get_event_loop()
-	loop.run_until_complete(setup_drone())
+	asyncio.ensure_future(setup_drone())
+	asyncio.get_event_loop().run_forever()
 	
 #ctrl_drone()
 
