@@ -642,7 +642,7 @@ def setup_lora():
 		
 		print("[LORA] LORA Ssetup complete!\n")
 
-voltage = 0
+voltage = 89
 
 async def batt_check(vehicle):
 	global voltage
@@ -663,7 +663,8 @@ async def setup_drone():
 		if state.is_connected:
 			print ("[DRONE] Connected\n")
 			break
-			
+	
+	print("wait 20 seconds for data transfer?")
 	print("[DRONE] pull data")
 		
 	stage = 0
