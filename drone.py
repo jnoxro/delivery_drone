@@ -138,7 +138,7 @@ def send_sms(mob, msgtxt):
 
 		if stage == 1:
 			bufflen = buff_check(0x00)
-			if bufflen[0] > 0:
+			if bufflen[0] > 12: #>9 should work
 				print("[GSM|SMS] Response detected")
 				stage = 2
 				#time.sleep(0.2)
@@ -147,19 +147,25 @@ def send_sms(mob, msgtxt):
 
 			if time.time()-time1 > 10:
 				print ("[GSM|SMS] Response timeout, retry enter SMS mode")
-				stage = 0
+				if bufflen[0] > 0:
+					msg = buff_read(0x00, bufflen[0])
+					msg2 = uart_decode(msg)
+					print("[GSM|SMS] Timeout resp?: " + msg2)
+					stage = 0
 
 		if stage == 2:
 			print ("[GSM|SMS] Get Response...")
 			msg = buff_read(0x00, bufflen[0])
 			msg2 = uart_decode(msg)
+			
+			tar = ['O','K']
 
-			if msg2.strip("\n\r\0") == "OK":
+			if set(tar).issubset(set(list(msg2))):
 				print ("[GSM|SMS] SMS mode: OK")
 				stage = 3
 				#time.sleep(0.2)
 			else:
-				print("[GSM|SMS] SMS mode: FAIL")
+				print("[GSM|SMS] SMS mode: FAIL: " + msg2)
 				stage = 0
 				#time.sleep(0.2)
 
