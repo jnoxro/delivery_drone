@@ -2,16 +2,16 @@
 import time
 #from time import time
 import sys
-import asyncio
+#import asyncio
 import serial
 import spidev
 import RPi.GPIO as gpio
 import random
 
 import dronekit
-from mavsdk import System
+#from mavsdk import System
 
-vehicle = System()
+#vehicle = System()
 
 #SPI2UART
 #uart1 = GSM
@@ -650,31 +650,35 @@ async def batt_check(vehicle):
 		print(f"Batt: {data.remaining_percent}")
 		voltage = data.remaining_percent
 		
-async def setup_drone():
-	global vehicle
-	vehicle = System()
+#async def setup_drone():
+	#global vehicle
+	#vehicle = System()
+def setup_drone():
 	print("Setup drone")
 	print("[DRONE] Connect to drone")
+	global vehicle
 	
-	await vehicle.connect(system_address="serial:///dev/serial0:57600")
+	vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
+	print ("[DRONE] Connected\n")
+	#await vehicle.connect(system_address="serial:///dev/serial0:57600")
 
-	print("[DRONE] Connecting...")
-	async for state in vehicle.core.connection_state():
-		if state.is_connected:
-			print ("[DRONE] Connected\n")
-			break
+	#print("[DRONE] Connecting...")
+	#async for state in vehicle.core.connection_state():
+		#if state.is_connected:
+		#	print ("[DRONE] Connected\n")
+			#break
 	
-	print("wait 20 seconds for data transfer?")
-	time.sleep(20)
+	#print("wait 20 seconds for data transfer?")
+	#time.sleep(20)
 	print("[DRONE] pull data")
 		
 	stage = 0
 	connected = 0
 	while stage < 10:
 		if stage == 0:
-			print("[DRONE] pull batt")
+			#print("[DRONE] pull batt")
 			
-			asyncio.ensure_future(batt_check(vehicle))
+			#asyncio.ensure_future(batt_check(vehicle))
 			#print(voltage)
 			#async for data in vehicle.telemetry.battery():
 				#print(f"Batt: {data.voltage_v}")
@@ -684,6 +688,29 @@ async def setup_drone():
 			#	print(f"mag: {data.is_magnetomoter_calibration_ok}")
 			#async for data in vehicle.telemetry.battery():
 				#print(f"Batt: {data.voltage_v}")
+				
+			print( "Autopilot Firmware version: %s" % vehicle.version)
+			#print( "Autopilot capabilities (supports ftp): %s" % vehicle.capabilities.ftp)
+			#print( "Global Location: %s" % vehicle.location.global_frame)
+			print( vehicle.location.global_relative_frame)
+			#print( "Local Location: %s" % vehicle.location.local_frame)    #NED
+			print( vehicle.attitude)
+			print( "Velocity: %s" % vehicle.velocity)
+			print( vehicle.gps_0)
+			print( "Groundspeed: %s" % vehicle.groundspeed)
+			#print( "Airspeed: %s" % vehicle.airspeed)
+			#print( "Gimbal status: %s" % vehicle.gimbal)
+			print( vehicle.battery)
+			print( "EKF OK?: %s" % vehicle.ekf_ok)
+			print( "Last Heartbeat: %s" % vehicle.last_heartbeat)
+			#print( "Rangefinder: %s" % vehicle.rangefinder)
+			#print( "Rangefinder distance: %s" % vehicle.rangefinder.distance)
+			#print( "Rangefinder voltage: %s" % vehicle.rangefinder.voltage)
+			print( "Heading: %s" % vehicle.heading)
+			print( "Is Armable?: %s" % vehicle.is_armable)
+			print( "System status: %s" % vehicle.system_status.state)
+			print( "Mode: %s" % vehicle.mode.name)    # settable
+			print( "Armed: %s" % vehicle.armed)    # settable
 			
 			print("\n[DRONE] Wait until arming ready")
 			stage = 10
@@ -799,12 +826,14 @@ time.sleep(1)
 
 #setup_gsm()
 setup_lora()
+setup_drone()
+
 
 #drone_ready = 0
 #while drone_ready == 0:
-if __name__ == "__main__":
-	asyncio.ensure_future(setup_drone())
-	asyncio.get_event_loop().run_forever()
+#if __name__ == "__main__":
+#	asyncio.ensure_future(setup_drone())
+#	asyncio.get_event_loop().run_forever()
 	
 #ctrl_drone()
 
