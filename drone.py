@@ -10,6 +10,7 @@ import random
 
 import dronekit
 from mavsdk import System
+
 vehicle = System()
 
 #SPI2UART
@@ -644,6 +645,7 @@ def setup_lora():
 
 async def setup_drone():
 	global vehicle
+	vehicle = System()
 	print("Setup drone")
 	print("[DRONE] Connect to drone")
 	
