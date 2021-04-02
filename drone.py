@@ -647,8 +647,8 @@ voltage = 89
 async def batt_check(vehicle):
 	global voltage
 	async for data in vehicle.telemetry.battery():
-		print(f"Batt: {data.voltage_v}")
-		voltage = data.volate_v
+		print(f"Batt: {data.remaining_percent}")
+		voltage = data.remaining_percent
 		
 async def setup_drone():
 	global vehicle
@@ -665,6 +665,7 @@ async def setup_drone():
 			break
 	
 	print("wait 20 seconds for data transfer?")
+	time.sleep(20)
 	print("[DRONE] pull data")
 		
 	stage = 0
@@ -674,7 +675,7 @@ async def setup_drone():
 			print("[DRONE] pull batt")
 			
 			asyncio.ensure_future(batt_check(vehicle))
-			print(voltage)
+			#print(voltage)
 			#async for data in vehicle.telemetry.battery():
 				#print(f"Batt: {data.voltage_v}")
 			#async for data in vehicle.telemetry.health():
