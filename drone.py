@@ -810,6 +810,71 @@ def ctrl_drone(): #main function
 			
 			stage = 3
 			running = 0
+			
+			
+		if stage == 3:
+			if smsrec == 1:
+				stage = 4
+				time.sleep(1.5)
+			else:
+				time.sleep(1)
+		
+		if stage == 4:
+			print("[SYSTEM] SMS Received")
+			
+			msg = list(read_sms())
+			msglen = len(msg)
+			#print(msg)
+			ncount = 0
+			ccount = 0
+			msgstart = 0
+			msgend = 0
+			nostart = 0
+			noend = 0
+
+			for i in range(msglen):
+				if msg[(msglen-1)-i] == '\n':
+					ncount = ncount + 1
+			
+					if ncount == 3:
+						msgend = (msglen-1)-i-1
+						#print(msgend)
+
+					if ncount == 4:
+						msgstart = (msglen-1)-i+1
+						#print(msgstart)
+			
+						
+				
+				if msg[(msglen-1)-i] == ',':
+					ccount = ccount + 1
+					
+					if ccount == 3:
+						noend = (msglen-1)-i-1
+						#print(noend)
+					
+					if ccount == 4:
+						nostart = (msglen-1)-i+2
+						#print(nostart)
+						
+			
+			custmsg = ''.join(str(e) for e in msg[msgstart:msgend])
+			reccustmob = ''.join(str(e) for e in (msg[nostart:noend]))
+			
+			print(custmsg)
+			print(reccustmob)
+			
+			if not reccustmob == custmob:
+				print("uh oh")
+
+			if len(custmsg) == 0 or len(custmob) == 0:
+				print("[SYSTEM] Failed to grab cust details")
+				stage = 2 
+				time.sleep(1)
+			else:
+				stage = 5
+			
+
 
 
 
