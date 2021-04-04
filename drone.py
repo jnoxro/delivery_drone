@@ -645,13 +645,13 @@ def setup_lora():
 		
 		print("[LORA] LORA Ssetup complete!\n")
 
-voltage = 89
+#voltage = 89
 
-async def batt_check(vehicle):
-	global voltage
-	async for data in vehicle.telemetry.battery():
-		print(f"Batt: {data.remaining_percent}")
-		voltage = data.remaining_percent
+#async def batt_check(vehicle):
+#	global voltage
+#	async for data in vehicle.telemetry.battery():
+#		print(f"Batt: {data.remaining_percent}")
+#		voltage = data.remaining_percent
 		
 #async def setup_drone():
 	#global vehicle
@@ -939,7 +939,7 @@ def ctrl_drone(): #main function
 			gps = ''.join(str(e) for e in msg[msgstart:msgend])
 			reccustmob = ''.join(str(e) for e in (msg[nostart:noend]))
 			
-			print(custmsg)
+			print(gps)
 			print(reccustmob)
 			
 			if not reccustmob == custmob:
@@ -949,6 +949,9 @@ def ctrl_drone(): #main function
 				print("[SYSTEM] Failed to grab cust details")
 				stage = 2 
 				time.sleep(1)
+				
+			gpslist = gps.split()
+			print(gpslist)
 			
 
 
