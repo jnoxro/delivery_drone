@@ -1,3 +1,5 @@
+#delivery drone by jack orton
+#sorry i got bored commenting after a bit
 
 import time
 #from time import time
@@ -10,10 +12,11 @@ import random
 
 import dronekit
 #from mavsdk import System
+##would have preferred mavsdk but it wouldn't connect properly - probably my fault
 
 #vehicle = System()
 
-#SPI2UART
+#SPI2UART connections
 #uart1 = GSM
 #uart2 = lora
 
@@ -180,7 +183,7 @@ def send_sms(mob, msgtxt):
 			#sg = "AT+CMGS=\"+447459636932\"\n" #self
 			#sg = list(bytearray(sg.encode()))
 			#msg = "AT+CMGS=\"3232\"\n" #text STOP to stop promotions
-			#msg = "AT+CMGS=\"+447914157048\"\n" #j-dog
+			#msg = "AT+CMGS=\"+447*********\"\n" #ya boi j-dog
 			msg = "AT+CMGS=\"" + mob + "\"\n"
 			print("texting: " + msg)
 			msg = list(bytearray(msg.encode()))
@@ -470,7 +473,7 @@ def setup_gsm(): #check connection to and set up the gsm module
 		if stage == 6: #send text to self
 			print("[GSM] Send test SMS to self...")
 			
-			#send_sms("+447914157048", testsms)
+			#send_sms("+447*********", testsms)
 			send_sms("+447459636932", testsms)
 			
 			stage = 15
@@ -807,9 +810,10 @@ def ctrl_drone(): #main function
 			msg = "".join(str(e) for e in ["Hi ", custname, ". We currently have: USB Cable. Would you like one? (Yes)"])
 			send_sms(custmob, msg)
 			print(msg)
+			print("[SYSTEM] Wait reply...")
 			
 			stage = 3
-			running = 0
+			#running = 0
 			
 			
 		if stage == 3:
@@ -867,12 +871,84 @@ def ctrl_drone(): #main function
 			if not reccustmob == custmob:
 				print("uh oh")
 
-			if len(custmsg) == 0 or len(custmob) == 0:
+			if len(custmsg) == 0 or len(reccustmob) == 0:
 				print("[SYSTEM] Failed to grab cust details")
 				stage = 2 
 				time.sleep(1)
 			else:
-				stage = 5
+				if custmsg == "Yes" or custmsg == "yes":
+					stage = 5
+					time.sleep(1)
+				else:
+					stage = 3
+					
+		if stage == 5:
+			msg = "Send gps coords (with space between)" #lazy but im already using commas to separate message out
+			send_sms(custmob, msg)
+			print(msg)
+			print("[SYSTEM] Wait reply...")
+			
+			stage = 6
+		
+		if stage == 6:
+			if smsrec == 1:
+				stage = 7
+				time.sleep(1.5)
+			else:
+				time.sleep(1)
+				
+		if stage == 7:
+			print("[SYSTEM] SMS Received")
+			
+			msg = list(read_sms())
+			msglen = len(msg)
+			
+			ncount = 0
+			ccount = 0
+			msgstart = 0
+			msgend = 0
+			nostart = 0
+			noend = 0
+
+			for i in range(msglen):
+				if msg[(msglen-1)-i] == '\n':
+					ncount = ncount + 1
+			
+					if ncount == 3:
+						msgend = (msglen-1)-i-1
+						#print(msgend)
+
+					if ncount == 4:
+						msgstart = (msglen-1)-i+1
+						#print(msgstart)
+			
+						
+				
+				if msg[(msglen-1)-i] == ',':
+					ccount = ccount + 1
+					
+					if ccount == 3:
+						noend = (msglen-1)-i-1
+						#print(noend)
+					
+					if ccount == 4:
+						nostart = (msglen-1)-i+2
+						#print(nostart)
+						
+			
+			gps = ''.join(str(e) for e in msg[msgstart:msgend])
+			reccustmob = ''.join(str(e) for e in (msg[nostart:noend]))
+			
+			print(custmsg)
+			print(reccustmob)
+			
+			if not reccustmob == custmob:
+				print("uh oh")
+
+			if len(gps) == 0 or len(reccustmob) == 0:
+				print("[SYSTEM] Failed to grab cust details")
+				stage = 2 
+				time.sleep(1)
 			
 
 
@@ -886,7 +962,7 @@ setup_pins()
 time.sleep(1)
 
 
-#send_sms("+447914157048", "sahh dude - love from ur drone")
+#send_sms("+447*********", "sahh dude - love from ur drone")
 
 
 #setup_gsm()
@@ -902,7 +978,7 @@ setup_drone()
 	
 #ctrl_drone()
 
-#send_sms("+447914157048", "sahh dude - love from ur drone")
+#send_sms("+447*********", "sahh dude - love from ur drone")
 
 spi.close()
 gpio.cleanup()
