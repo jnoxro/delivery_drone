@@ -741,6 +741,8 @@ def ctrl_drone(): #main function
 	running = 1
 	custname = ""
 	custmob = ""
+	targps = (0, 0)
+	currgps = (0, 0)
 	print("\n[SYSTEM] System Ready... Run main script")
 	print("[SYSTEM] Wait for SMS")
 	while running == 1:
@@ -836,8 +838,7 @@ def ctrl_drone(): #main function
 			msgend = 0
 			nostart = 0
 			noend = 0
-			targps = (0, 0)
-			currgps = (0, 0)
+			
 			
 
 			for i in range(msglen):
