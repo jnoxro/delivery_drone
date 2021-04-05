@@ -962,6 +962,7 @@ def ctrl_drone(): #main function
 			print(currgps)
 			
 			dis = distance.distance(currgps,targps).km
+			print(dis)
 			if dis < 0.5:
 				print("[SYSTEM] Good target")
 				stage = 8
