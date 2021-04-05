@@ -9,6 +9,7 @@ import serial
 import spidev
 import RPi.GPIO as gpio
 import random
+from geopy import distance
 
 import dronekit
 #from mavsdk import System
@@ -835,6 +836,9 @@ def ctrl_drone(): #main function
 			msgend = 0
 			nostart = 0
 			noend = 0
+			targps = (0, 0)
+			currgps = (0, 0)
+			
 
 			for i in range(msglen):
 				if msg[(msglen-1)-i] == '\n':
@@ -883,7 +887,7 @@ def ctrl_drone(): #main function
 					stage = 3
 					
 		if stage == 5:
-			msg = "Send gps coords (with space between)" #lazy but im already using commas to separate message out
+			msg = "Send gps lat&lon coords (with space between)" #lazy but im already using commas to separate message out
 			send_sms(custmob, msg)
 			print(msg)
 			print("[SYSTEM] Wait reply...")
@@ -950,8 +954,17 @@ def ctrl_drone(): #main function
 				stage = 2 
 				time.sleep(1)
 				
-			gpslist = gps.split()
-			print(gpslist)
+			targps = gps.split()
+			currgps = vehicle.gps_0
+			currgps = currgps.split()
+			print(targps)
+			print(currgps)
+			
+			dis = distance.distance(currgps,targps).km
+			if dis < 0.5:
+				print("[SYSTEM] Good target")
+				stage = 8
+				time.sleep(1)
 			
 
 
