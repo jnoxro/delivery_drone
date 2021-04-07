@@ -261,7 +261,8 @@ def read_sms():
 	recmsg = ""
 	while stage < 9:
 		if stage == 0:
-			msg = "AT\n"
+			#msg = "AT\n"
+			msg = "AT+CMGF=1\n"
 			msg = list(bytearray(msg.encode()))
 
 			buff_send(0x00, msg)
