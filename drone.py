@@ -725,6 +725,7 @@ def setup_drone():
 			satcount = vehicle.gps_0.num_sat
 			print(currgps)
 			
+			#if vehicle.is_armable: #for some reason vehicle.is_armable always returned False, even if i could arm.
 			if currgps[0] != 0 && satcount > 4:
 				print("[DRONE] Ready to arm\n")
 				stage = 10
@@ -966,23 +967,25 @@ def ctrl_drone(): #main function
 				print("[SYSTEM] Failed to grab cust details")
 				stage = 2 
 				time.sleep(1)
-				
-			targps = gps.split()
 			
 			
-			
-			currgps = [vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon]
-			#currgps = currgps.split("=")
-			#currgps = [float(currgps[1].split(","))[0], float(currgps[2].split(","))[0]]
+			targps = (float(gps.split()[0], float(gps.split()[1])
+			currgps = (vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
+
 			print(targps)
 			print(currgps)
 			
+					
 			dis = distance.distance(currgps,targps).km
 			print(dis)
+					
 			if dis < 0.5:
 				print("[SYSTEM] Good target")
 				stage = 8
 				time.sleep(1)
+			else:
+				print("[SYSTEM] Big Distance")
+				running = 0
 			
 
 
