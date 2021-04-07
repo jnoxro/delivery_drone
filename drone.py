@@ -1002,7 +1002,7 @@ time.sleep(1)
 #send_sms("+447*********", "sahh dude - love from ur drone")
 
 
-#setup_gsm()
+setup_gsm()
 setup_lora()
 setup_drone()
 
@@ -1013,7 +1013,7 @@ setup_drone()
 #	asyncio.ensure_future(setup_drone())
 #	asyncio.get_event_loop().run_forever()
 	
-#ctrl_drone()
+ctrl_drone()
 
 #send_sms("+447*********", "sahh dude - love from ur drone")
 
