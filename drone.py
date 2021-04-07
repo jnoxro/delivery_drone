@@ -730,6 +730,7 @@ def setup_drone():
 				
 				
 				currgps = vehicle.location.global_relative_frame
+				currgps = currgps.split("=")
 				currgps = [float(currgps[1].split(","))[0], float(currgps[2].split(","))[0]]
 				print(currgps)
 					   
