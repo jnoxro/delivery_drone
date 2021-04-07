@@ -9,7 +9,7 @@ import serial
 import spidev
 import RPi.GPIO as gpio
 import random
-from geopy import distance
+#from geopy import distance
 
 import dronekit
 #from mavsdk import System
@@ -717,7 +717,7 @@ def setup_drone():
 			print( "Armed: %s" % vehicle.armed)    # settable
 			
 			print("\n[DRONE] Wait until arming ready")
-			stage = 10
+			stage = 1
 			time1 = time.time()
 		
 		if stage == 1:
