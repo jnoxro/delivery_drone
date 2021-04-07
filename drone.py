@@ -727,6 +727,13 @@ def setup_drone():
 				connected = 1
 			else:
 				print("[DRONE] Waiting for armable")
+				
+				
+				currgps = vehicle.location.global_relative_frame
+				currgps = [float(currgps[1].split(","))[0]), float(currgps[2].split(","))[0]))
+				print(currgps)
+					   
+					   
 				time.sleep(2)
 				
 			if time.time() - time1 > 20:
@@ -956,8 +963,12 @@ def ctrl_drone(): #main function
 				time.sleep(1)
 				
 			targps = gps.split()
-			currgps = vehicle.gps_0
-			currgps = currgps.split()
+			
+			
+			
+			currgps = vehicle.location.global_relative_frame
+			currgps = currgps.split("=")
+			currgps = [float(currgps[1].split(","))[0]), float(currgps[2].split(","))[0]))
 			print(targps)
 			print(currgps)
 			
