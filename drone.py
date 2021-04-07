@@ -726,7 +726,7 @@ def setup_drone():
 			print(currgps)
 			
 			#if vehicle.is_armable: #for some reason vehicle.is_armable always returned False, even if i could arm.
-			if currgps[0] != 0 && satcount > 4:
+			if currgps[0] != 0 and satcount > 4:
 				print("[DRONE] Ready to arm\n")
 				stage = 10
 				connected = 1
