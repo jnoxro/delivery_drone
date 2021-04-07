@@ -729,11 +729,11 @@ def setup_drone():
 				print("[DRONE] Waiting for armable")
 				
 				
-				currgps = vehicle.location.global_relative_frame
-				currgps = currgps.split("=")
-				currgps = [float(currgps[1].split(","))[0], float(currgps[2].split(","))[0]]
+				currgps = vehicle.location.global_relative_frame.lat
+				#currgps = currgps.split("=")
+				#currgps = [float(currgps[1].split(","))[0], float(currgps[2].split(","))[0]]
 				print(currgps)
-					   
+				print(type(currgps))
 					   
 				time.sleep(2)
 				
@@ -967,9 +967,9 @@ def ctrl_drone(): #main function
 			
 			
 			
-			currgps = vehicle.location.global_relative_frame
-			currgps = currgps.split("=")
-			currgps = [float(currgps[1].split(","))[0], float(currgps[2].split(","))[0]]
+			currgps = [vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon]
+			#currgps = currgps.split("=")
+			#currgps = [float(currgps[1].split(","))[0], float(currgps[2].split(","))[0]]
 			print(targps)
 			print(currgps)
 			
