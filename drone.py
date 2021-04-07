@@ -722,7 +722,7 @@ def setup_drone():
 		
 		if stage == 1:
 			currgps = [vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon]
-			satcount = vehicle.GPSInfo.satellites_visible
+			satcount = vehicle.gps_0.satellites_visible
 			print(currgps)
 			
 			#if vehicle.is_armable: #for some reason vehicle.is_armable always returned False, even if i could arm.
