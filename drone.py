@@ -969,7 +969,7 @@ def ctrl_drone(): #main function
 				time.sleep(1)
 			
 			
-			targps = (float(gps.split()[0], float(gps.split()[1])
+			targps = (float(gps.split()[0], float(gps.split()[1]))
 			currgps = (vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
 
 			print(targps)
