@@ -730,7 +730,7 @@ def setup_drone():
 				
 				
 				currgps = vehicle.location.global_relative_frame
-				currgps = [float(currgps[1].split(","))[0]), float(currgps[2].split(","))[0]))
+				currgps = [float(currgps[1].split(","))[0], float(currgps[2].split(","))[0]))
 				print(currgps)
 					   
 					   
@@ -968,7 +968,7 @@ def ctrl_drone(): #main function
 			
 			currgps = vehicle.location.global_relative_frame
 			currgps = currgps.split("=")
-			currgps = [float(currgps[1].split(","))[0]), float(currgps[2].split(","))[0]))
+			currgps = [float(currgps[1].split(","))[0], float(currgps[2].split(","))[0]))
 			print(targps)
 			print(currgps)
 			
