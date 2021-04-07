@@ -721,7 +721,10 @@ def setup_drone():
 			time1 = time.time()
 		
 		if stage == 1:
-			if vehicle.is_armable:
+			currgps = [vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon]
+			print(currgps)
+			
+			if not currgps[0] == 0:
 				print("[DRONE] Ready to arm\n")
 				stage = 10
 				connected = 1
@@ -729,11 +732,11 @@ def setup_drone():
 				print("[DRONE] Waiting for armable")
 				
 				
-				currgps = vehicle.location.global_relative_frame.lat
+				#currgps = vehicle.location.global_relative_frame.lat
 				#currgps = currgps.split("=")
 				#currgps = [float(currgps[1].split(","))[0], float(currgps[2].split(","))[0]]
-				print(currgps)
-				print(type(currgps))
+				#print(currgps)
+				#print(type(currgps))
 					   
 				time.sleep(2)
 				
