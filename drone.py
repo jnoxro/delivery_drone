@@ -724,16 +724,18 @@ def setup_drone():
 		if stage == 1:
 			currgps = [vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon]
 			satcount = vehicle.gps_0.satellites_visible
-			Mode = vehicle.mode.name
+			mode = vehicle.mode.name
 			print(currgps)
 			
 			#if vehicle.is_armable: #for some reason vehicle.is_armable always returned False, even if i could arm.
-			if currgps[0] != 0 and satcount > 4 and mode == "GUIDED":
+			if currgps[0] != 0 and satcount > 6 and mode == "GUIDED":
 				print("[DRONE] Ready to arm\n")
 				stage = 10
 				connected = 1
 			else:
 				print("[DRONE] Waiting for gps and GUIDED mode")
+				print("[DRONE] Sats: %d" % satcount)
+				print("[DRONE] Mode: %s" % mode)
 				
 				
 				#currgps = vehicle.location.global_relative_frame.lat
