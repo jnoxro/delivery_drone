@@ -722,9 +722,10 @@ def setup_drone():
 		
 		if stage == 1:
 			currgps = [vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon]
+			satcount = vehicle.gps_0.num_sat
 			print(currgps)
 			
-			if not currgps[0] == 0:
+			if currgps[0] != 0 && satcount > 4:
 				print("[DRONE] Ready to arm\n")
 				stage = 10
 				connected = 1
