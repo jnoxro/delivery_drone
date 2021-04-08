@@ -1016,7 +1016,7 @@ def ctrl_drone(): #main function
 				print ("[DRONE] Altitude: ", vehicle.location.global_relative_frame.alt)
 				#Break and return from function just below target altitude.
 				if vehicle.location.global_relative_frame.alt>=alt*0.95:
-				    print "[DRONE] Reached target altitude"
+				    print ("[DRONE] Reached target altitude")
 				    break
 				time.sleep(1)
 				
