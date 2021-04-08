@@ -765,7 +765,7 @@ def ctrl_drone(): #main function
 	print("[SYSTEM] Wait for SMS")
 	while running == 1:
 		
-		if vehicle.mode.name =! "GUIDED":
+		if vehicle.mode.name != "GUIDED":
 			print("[SYSTEM] NOT IN GUIDED - PAUSE")
 			pausestage = stage
 			stage = -1
