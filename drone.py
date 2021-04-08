@@ -1077,7 +1077,7 @@ def ctrl_drone(): #main function
 			if(msg2.strip("\n\r\0") == "OK"): #if expected response from GSM module
 				print("[GSM] Response: OK\n[GSM] Call underway")
 				stage = 13
-				#time.sleep(1)
+				time.sleep(1)
 			else: #if response not as expected, then return to stage 0
 				print("[GSM] Respone: Call FAIL: %s" % msg2.strip("\n\r\0"))
 				print(msg)
@@ -1116,7 +1116,7 @@ def ctrl_drone(): #main function
 			if(msg2.strip("\n\r\0") == "OK"): #if expected response from GSM module
 				print("[GSM] Response: OK\n[GSM] DTMF Listening...")
 				stage = 16
-				#time.sleep(1)
+				time.sleep(1)
 			else: #if response not as expected, then return to stage 0
 				print("[GSM] Respone: FAIL: %s" % msg2.strip("\n\r\0"))
 				print(msg)
@@ -1125,7 +1125,7 @@ def ctrl_drone(): #main function
 		if stage == 16:
 			dtmf = "100"
 			newdtmf = 0
-			lastin = 0
+			lastin = time.time()
 			while True:
 				bufflen = buff_check(0x00) #check if data is received on uart0 buffer of spi2uart
 				if bufflen[0] > 0: #if buffer has bytes
@@ -1136,9 +1136,9 @@ def ctrl_drone(): #main function
 					tar = list("+DTMF:")
 					if set(tar).issubset(set(list(msg2))):
 						print("[GSM] DTMF Input detected")
-						msg2 = msg.split("+DTMF:")
+						msg2 = msg2.split("+DTMF:")
 						dtmf = list(msg2[1])[0]
-						print(dtmf)
+						print("[GSM] PARSED: " + dtmf)
 						newdtmf = 1
 						lastin = time.time()
 					#time.sleep(1)
@@ -1162,6 +1162,7 @@ def ctrl_drone(): #main function
 				
 				if time.time() - lastin > 30:
 					print("input timeout")
+					stage = 17
 					break
 					
 		if stage == 17:
