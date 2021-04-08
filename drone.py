@@ -754,7 +754,7 @@ def setup_drone():
 	#return connected
 
 def ctrl_drone(): #main function
-	stage = 0
+	stage = 10 ######0
 	pausestage = 0
 	running = 1
 	custname = ""
@@ -1037,8 +1037,175 @@ def ctrl_drone(): #main function
 			stage = 10
 			
 		if stage == 10:
+			
+			
+			custmob = "+447914157048"
+			
+			
 			print("[DRONE] At customer GPS")
 			print("[SYSTEM] Call Customer")
+			print("[GSM] Dial")
+			
+			msg = "ATD+ " + custmob + ";\n"
+			msg = list(bytearray(msg.encode())) #convert message into sendable data
+			print(msg)
+			buff_send(0x00, msg)
+
+			time1 = time.time() #record time AT sent for timeout
+			stage = 11 #move onto next stage
+			
+			
+		if stage == 11: #listen for response from gsm module (we expect 'OK')
+			bufflen = buff_check(0x00) #check if data is received on uart0 buffer of spi2uart
+			if bufflen[0] > 0: #if buffer has bytes
+				print("[GSM] Response detected")
+				stage = 12 #move to read buffer
+				#time.sleep(1)
+			else:
+				time.sleep(1) #else wait for response
+
+			if time.time()-time1 > 10: #if no response in 10 seconds, return to stage 0 and resend AT
+				print("[GSM] Response timeout, retrying call...")
+				stage = 10
+
+		if stage == 12: #read response from module, ensure it is 'OK', otherwise retry
+			print("[GSM] Get Reponse...")
+			msg = buff_read(0x00, bufflen[0]) #read uart0 received bytes
+			msg2 = uart_decode(msg) #decode into text
+
+			if(msg2.strip("\n\r\0") == "OK"): #if expected response from GSM module
+				print("[GSM] Response: OK\n[GSM] Call underway")
+				stage = 13
+				#time.sleep(1)
+			else: #if response not as expected, then return to stage 0
+				print("[GSM] Respone: Call FAIL: %s" % msg2.strip("\n\r\0"))
+				print(msg)
+				running = 0
+		
+		if stage == 13:
+			print("[GSM] Enable DTMF")
+			
+			msg = "AT+DDET=1\n"
+			msg = list(bytearray(msg.encode())) #convert message into sendable data
+			print(msg)
+			buff_send(0x00, msg)
+
+			time1 = time.time() #record time AT sent for timeout
+			stage = 14 #move onto next stage
+			
+			
+		if stage == 14: #listen for response from gsm module (we expect 'OK')
+			bufflen = buff_check(0x00) #check if data is received on uart0 buffer of spi2uart
+			if bufflen[0] > 0: #if buffer has bytes
+				print("[GSM] Response detected")
+				stage = 15 #move to read buffer
+				#time.sleep(1)
+			else:
+				time.sleep(1) #else wait for response
+
+			if time.time()-time1 > 10: #if no response in 10 seconds, return to stage 0 and resend AT
+				print("[GSM] Response timeout, retrying DTMF enable...")
+				stage = 13
+
+		if stage == 15: #read response from module, ensure it is 'OK', otherwise retry
+			print("[GSM] Get Reponse...")
+			msg = buff_read(0x00, bufflen[0]) #read uart0 received bytes
+			msg2 = uart_decode(msg) #decode into text
+
+			if(msg2.strip("\n\r\0") == "OK"): #if expected response from GSM module
+				print("[GSM] Response: OK\n[GSM] DTMF Listening...")
+				stage = 16
+				#time.sleep(1)
+			else: #if response not as expected, then return to stage 0
+				print("[GSM] Respone: FAIL: %s" % msg2.strip("\n\r\0"))
+				print(msg)
+				running = 13
+				
+		if stage == 16:
+			dtmf = "100"
+			newdtmf = 0
+			lastin = 0
+			while True:
+				bufflen = buff_check(0x00) #check if data is received on uart0 buffer of spi2uart
+				if bufflen[0] > 0: #if buffer has bytes
+					print("[GSM] Response detected")
+					msg = buff_read(0x00, bufflen[0]) #read uart0 received bytes
+					msg2 = uart_decode(msg) #decode into text
+					print(msg2)
+					tar = list("+DTMF:")
+					if set(tar).issubset(set(list(msg2))):
+						print("[GSM] DTMF Input detected")
+						msg2 = msg.split("+DTMF:")
+						dtmf = list(msg2[1])[0]
+						print(dtmf)
+						newdtmf = 1
+						lastin = time.time()
+					#time.sleep(1)
+				else:
+					time.sleep(1) #else wait for response
+					
+				if newdtmf == 1:
+					newdtmf = 0
+					if dtmf == "2":
+						print("Forwards")
+					if dtmf == "4":
+						print("left")
+					if dtmf == "6":
+						print("right")
+					if dtmf == "8":
+						print("back")
+					if dtmf == "#":
+						print("DROP TIME BABY")
+						stage = 17
+						break
+				
+				if time.time() - lastin > 30:
+					print("input timeout")
+					break
+					
+		if stage == 17:
+			print("[GSM] Hangup Call")
+			
+			msg = "ATH\n"
+			msg = list(bytearray(msg.encode())) #convert message into sendable data
+			print(msg)
+			buff_send(0x00, msg)
+
+			time1 = time.time() #record time AT sent for timeout
+			stage = 18 #move onto next stage
+			
+			
+		if stage == 18: #listen for response from gsm module (we expect 'OK')
+			bufflen = buff_check(0x00) #check if data is received on uart0 buffer of spi2uart
+			if bufflen[0] > 0: #if buffer has bytes
+				print("[GSM] Response detected")
+				stage = 19 #move to read buffer
+				#time.sleep(1)
+			else:
+				time.sleep(1) #else wait for response
+
+			if time.time()-time1 > 10: #if no response in 10 seconds, return to stage 0 and resend AT
+				print("[GSM] Response timeout, retrying Hangup...")
+				stage = 17
+
+		if stage == 19: #read response from module, ensure it is 'OK', otherwise retry
+			print("[GSM] Get Reponse...")
+			msg = buff_read(0x00, bufflen[0]) #read uart0 received bytes
+			msg2 = uart_decode(msg) #decode into text
+
+			if(msg2.strip("\n\r\0") == "OK"): #if expected response from GSM module
+				print("[GSM] Response: OK")
+				stage = 20
+				
+				running = 0
+				
+				
+				#time.sleep(1)
+			else: #if response not as expected, then return to stage 0
+				print("[GSM] Respone: FAIL: %s" % msg2.strip("\n\r\0"))
+				print(msg)
+				stage = 17
+				
 			
 
 
@@ -1055,9 +1222,9 @@ time.sleep(1)
 #send_sms("+447*********", "sahh dude - love from ur drone")
 
 
-#setup_gsm()
+setup_gsm()
 #setup_lora()
-setup_drone()
+#setup_drone()
 
 
 #drone_ready = 0
@@ -1066,7 +1233,7 @@ setup_drone()
 #	asyncio.ensure_future(setup_drone())
 #	asyncio.get_event_loop().run_forever()
 	
-#ctrl_drone()
+ctrl_drone()
 
 #send_sms("+447*********", "sahh dude - love from ur drone")
 
