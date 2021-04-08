@@ -30,7 +30,6 @@ bufflen = [0, 0]
 spi = spidev.SpiDev()
 
 smsrec = 0
-vehicle = 0
 
 def setup_pins():
 
@@ -1224,7 +1223,7 @@ time.sleep(1)
 
 setup_gsm()
 #setup_lora()
-#setup_drone()
+setup_drone()
 
 
 #drone_ready = 0
