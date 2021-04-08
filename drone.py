@@ -109,6 +109,22 @@ def buff_send(uart, msg):
 	spi.xfer(msg)
 	gpio.output(ss1, gpio.HIGH)
 
+	
+setup_pins()
+time.sleep(!)
+	
+print("[DRONE] Connect to drone")
+vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
+print ("[DRONE] Connected\n")	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 def buff_send_sms(uart, msg):
 	end = [26]
 	nl = "\n"
@@ -662,11 +678,11 @@ def setup_lora():
 	#vehicle = System()
 def setup_drone():
 	print("Setup drone")
-	print("[DRONE] Connect to drone")
+	#print("[DRONE] Connect to drone")
 	global vehicle
 	
-	vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
-	print ("[DRONE] Connected\n")
+	#vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
+	#print ("[DRONE] Connected\n")
 	#await vehicle.connect(system_address="serial:///dev/serial0:57600")
 
 	#print("[DRONE] Connecting...")
@@ -1257,7 +1273,7 @@ def ctrl_drone(): #main function
 
 print("\n----------------\nDelivery Drone\n----------------\nby Jack Orton\n\n")
 
-setup_pins()
+#setup_pins()
 time.sleep(1)
 
 
