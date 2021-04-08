@@ -9,8 +9,10 @@ import serial
 import spidev
 import RPi.GPIO as gpio
 import random
-#from geopy import distance
+from geopy import distance
+import geopy
 
+from pymavlink import mavutil
 import dronekit
 #from mavsdk import System
 ##would have preferred mavsdk but it wouldn't connect properly - probably my fault
@@ -752,7 +754,34 @@ def setup_drone():
 				stage = 10 ##0
 	
 	#return connected
-
+def condition_yaw(heading, relative=False):
+	if relative:
+		is_relative=1 #yaw relative to direction of travel
+	else:
+		is_relative=0 #yaw is an absolute angle
+	# create the CONDITION_YAW command using command_long_encode()
+	msg = vehicle.message_factory.command_long_encode(
+		0, 0,    # target system, target component
+		mavutil.mavlink.MAV_CMD_CONDITION_YAW, #command
+		0, #confirmation
+		heading,    # param 1, yaw in degrees
+		0,          # param 2, yaw speed deg/s
+		1,          # param 3, direction -1 ccw, 1 cw
+		is_relative, # param 4, relative offset 1, absolute angle 0
+		0, 0, 0)    # param 5 ~ 7 not used
+	# send command to vehicle
+	vehicle.send_mavlink(msg)
+	
+def goto(head, gotoFunction=vehicle.simple_goto):
+	currentLocation = (vehicle.location.global_relative_frame.lat, vehicle.location.global_relative_frame.lon)
+	move = distance.distance(0.0005)
+	new = move.destination(currentLocation, head)
+	targps = (new[0], new[1])
+	tar_loc = dronekit.LocationGlobalRelative(targps, 3.5)
+	#targetLocation=get_location_metres(currentLocation, dNorth, dEast)
+	# targetDistance=get_distance_metres(currentLocation, targetLocation)
+	gotoFunction(targetLocation)
+	
 def ctrl_drone(): #main function
 	stage = 10 ######0
 	pausestage = 0
@@ -1027,6 +1056,9 @@ def ctrl_drone(): #main function
 			print("[DRONE] Go to customer GPS:")
 			print(targps)
 			tar_loc = dronekit.LocationGlobalRelative(targps, 3.5)
+			
+			condition_yaw(0, False)
+			
 			vehicle.simple_goto(tar_loc, groundspeed=3)
 			remainingDistance = distance.distance((vehicle.location.global_frame.lat, vehicle.location.global_frame.lon),(tar_loc.lat, tar_loc.lon)).m
 			
@@ -1149,12 +1181,20 @@ def ctrl_drone(): #main function
 					newdtmf = 0
 					if dtmf == "2":
 						print("Forwards")
+						goto(0.5, 0)
+						time.sleep(0.5)
 					if dtmf == "4":
 						print("left")
+						goto(0, -0.5)
+						time.sleep(0.5)
 					if dtmf == "6":
 						print("right")
+						goto(0, 0.5)
+						time.sleep(0.5)
 					if dtmf == "8":
 						print("back")
+						goto(-0.5, 0)
+						time.sleep(0.5)
 					if dtmf == "#":
 						print("DROP TIME BABY")
 						stage = 17
