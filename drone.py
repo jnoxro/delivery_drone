@@ -755,6 +755,7 @@ def setup_drone():
 
 def ctrl_drone(): #main function
 	stage = 0
+	pausestage = 0
 	running = 1
 	custname = ""
 	custmob = ""
@@ -763,6 +764,15 @@ def ctrl_drone(): #main function
 	print("\n[SYSTEM] System Ready... Run main script")
 	print("[SYSTEM] Wait for SMS")
 	while running == 1:
+		
+		if vehicle.mode.name =! "GUIDED":
+			print("[SYSTEM] NOT IN GUIDED - PAUSE")
+			pausestage = stage
+			stage = -1
+		if stage == -1 and vehicle.mode.name == "GUIDED":
+			print("[SYSTEM] Resume")
+			stage = oldstage
+		
 		if stage == 0:
 			if smsrec == 1:
 				stage = 1
@@ -990,6 +1000,33 @@ def ctrl_drone(): #main function
 			else:
 				print("[SYSTEM] Big Distance")
 				running = 0
+				
+		if stage == 8:
+			alt = 3.5
+			print("[DRONE] Arm and takeoff...")
+			vehicle.armed = True
+			while not vehicle.armed:
+       				print ("[DRONE] Arming...")
+        			time.sleep(1)
+			print ("[DRONE] Armed")
+			print ("[DRONE] Takeoff to %fm" % alt)
+			vehicle.simple_takeoff(alt) #take off to 3.5m height
+			
+			while True:
+				print ("[DRONE] Altitude: ", vehicle.location.global_relative_frame.alt)
+				#Break and return from function just below target altitude.
+				if vehicle.location.global_relative_frame.alt>=alt*0.95:
+				    print "[DRONE] Reached target altitude"
+				    break
+				time.sleep(1)
+				
+			stage = 9
+			
+		if stage == 9:
+			print("[DRONE] Go to customer GPS:")
+			print(targps)
+			tar_loc = dronekit.LocationGlobalRelative(targps, 3.5)
+			vehicle.simple_goto(tar_loc, groundspeed=3)
 			
 
 
