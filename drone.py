@@ -30,6 +30,7 @@ bufflen = [0, 0]
 spi = spidev.SpiDev()
 
 smsrec = 0
+vehicle = 0
 
 def setup_pins():
 
