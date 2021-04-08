@@ -111,7 +111,7 @@ def buff_send(uart, msg):
 
 	
 setup_pins()
-time.sleep(!)
+time.sleep(1)
 	
 print("[DRONE] Connect to drone")
 vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
