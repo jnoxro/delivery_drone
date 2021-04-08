@@ -766,9 +766,10 @@ def ctrl_drone(): #main function
 	while running == 1:
 		
 		if vehicle.mode.name != "GUIDED":
-			print("[SYSTEM] NOT IN GUIDED - PAUSE")
+			#print("[SYSTEM] NOT IN GUIDED - PAUSE")
+			#print(vehicle.mode.name)
 			pausestage = stage
-			stage = -1
+			#stage = -1
 		if stage == -1 and vehicle.mode.name == "GUIDED":
 			print("[SYSTEM] Resume")
 			stage = oldstage
