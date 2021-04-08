@@ -1238,7 +1238,7 @@ def ctrl_drone(): #main function
 			if(msg2.strip("\n\r\0") == "OK"): #if expected response from GSM module
 				print("[GSM] Response: OK")
 				stage = 20
-				
+				vehicle.mode = "LAND"
 				running = 0
 				
 				
