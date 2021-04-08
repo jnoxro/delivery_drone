@@ -783,7 +783,7 @@ def goto(head, gotoFunction=vehicle.simple_goto):
 	gotoFunction(targetLocation)
 	
 def ctrl_drone(): #main function
-	stage = 10 ######0
+	stage = 0 ######0
 	pausestage = 0
 	running = 1
 	custname = ""
