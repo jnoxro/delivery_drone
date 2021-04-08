@@ -1137,7 +1137,7 @@ def ctrl_drone(): #main function
 					if set(tar).issubset(set(list(msg2))):
 						print("[GSM] DTMF Input detected")
 						msg2 = msg2.split("+DTMF:")
-						dtmf = list(msg2[1])[0]
+						dtmf = list(msg2[1])[1]
 						print("[GSM] PARSED: " + dtmf)
 						newdtmf = 1
 						lastin = time.time()
