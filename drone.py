@@ -110,21 +110,6 @@ def buff_send(uart, msg):
 	gpio.output(ss1, gpio.HIGH)
 
 	
-setup_pins()
-time.sleep(1)
-	
-print("[DRONE] Connect to drone")
-vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
-print ("[DRONE] Connected\n")	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 def buff_send_sms(uart, msg):
 	end = [26]
 	nl = "\n"
@@ -147,6 +132,17 @@ def detect_sms(channel):
 
 def uart_decode(msg):
 	return bytearray(msg).decode()
+
+
+
+setup_pins()
+time.sleep(1)
+	
+print("[DRONE] Connect to drone")
+vehicle = dronekit.connect('/dev/serial0', wait_ready=True, baud=57600)
+print ("[DRONE] Connected\n")	
+
+
 
 def send_sms(mob, msgtxt):
 	print ("[GSM|SMS] Send SMS")
