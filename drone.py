@@ -1027,6 +1027,18 @@ def ctrl_drone(): #main function
 			print(targps)
 			tar_loc = dronekit.LocationGlobalRelative(targps, 3.5)
 			vehicle.simple_goto(tar_loc, groundspeed=3)
+			remainingDistance = distance.distance((vehicle.location.global_frame.lat, vehicle.location.global_frame.lon),(tar_loc.lat, tar_loc.lon)).m
+			
+			while remainingDistance>1: 
+				remainingDistance = distance.distance((vehicle.location.global_frame.lat, vehicle.location.global_frame.lon),(tar_loc.lat, tar_loc.lon)).m
+				print ("Distance to target: %f" % remainingDistance)
+				time.sleep(2)
+				
+			stage = 10
+			
+		if stage == 10:
+			print("[DRONE] At customer GPS")
+			print("[SYSTEM] Call Customer")
 			
 
 
